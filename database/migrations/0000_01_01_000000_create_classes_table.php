@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('classes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('mentor_id')->constrained('users')->cascadeOnDelete();
             $table->string('name');
             $table->text('description')->nullable();
             $table->timestamps();

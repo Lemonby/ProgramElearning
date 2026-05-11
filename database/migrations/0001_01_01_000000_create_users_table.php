@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            // Jika ada $table->timestamp('email_verified_at')->nullable(); biarkan saja tidak apa-apa
             $table->string('password');
-            $table->enum('role', ['mentor', 'member']); // Tambahan dari kita
-            // Jika ada $table->rememberToken(); biarkan saja
+            $table->enum('role', ['mentor', 'member']);
+            
+            // Tambahkan baris ini untuk menempelkan user ke 1 kelas tertentu
+            $table->foreignId('class_id')->nullable()->constrained('classes')->nullOnDelete();
+            
             $table->timestamps();
         });
 
