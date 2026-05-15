@@ -2,31 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Mail\PengumpulanTugas;
-use Illuminate\Support\Facades\Mail;
-
+use App\Http\Requests\StorePengumpulanTugasRequest;
+use App\Services\PengumpulanTugasService;
 
 class PengumpulanTugasController extends Controller
 {
-    //
-    public function kirimEmailPengumpulanTugas(Request $request)
+    private PengumpulanTugasService $tugasService;
+
+    public function __construct(PengumpulanTugasService $tugasService)
     {
-        /// Validasi input
-        $request->validate([
-            'judulTugas' => 'required|string|min:5',
-            'namaSiswa' => 'required|string|min:3',
-        ]);
+        $this->tugasService = $tugasService;
+    }
 
-        $judul = $request->input('judulTugas');
-        $namaSiswa = $request->input('namaSiswa');
+    /**
+     * Show form pengumpulan tugas
+     */
+    public function index()
+    {
+        return view('pengumpulan-tugas');
+    }
 
-        // Untuk testing, kita masukkan email manual atau email kamu yang terdaftar
-        $emailTujuan = "magungsomomiharjo@gmail.com"; 
+    /**
+     * Simpan tugas ke database
+     * 
+     * @param StorePengumpulanTugasRequest $request (validasi otomatis)
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function simpanTugas(StorePengumpulanTugasRequest $request)
+    {
+        try {
+            // Service handle semua logic: file upload + simpan db + trigger event
+            $submission = $this->tugasService->simpanTugas(
+                assignmentId: $request->input('assignmentId'),
+                memberId: $request->input('memberId'),
+                fileTugas: $request->file('fileTugas'),
+                linkTugas: $request->input('linkTugas'),
+                judulTugas: $request->input('judulTugas'),
+                namaSiswa: $request->input('namaSiswa'),
+            );
+            // Email otomatis terkirim via Event & Listener (TugasSubmitted -> SendTugasNotification)
 
-        // Kirim Email
-        Mail::to($emailTujuan)->send(new PengumpulanTugas($judul, $namaSiswa));
+            return redirect()->back()->with('success', 'Tugas berhasil dikumpulkan!');
 
-        return redirect()->back()->with('success', 'Email berhasil dikirim ke Mailtrap!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menyimpan tugas: ' . $e->getMessage());
+        }
     }
 }

@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class PengumpulanTugas extends Mailable
+class KirimHasilTugas extends Mailable
 {
     use Queueable, SerializesModels;
 
