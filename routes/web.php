@@ -2,10 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PengumpulanTugasController;
+use App\Http\Controllers\MaterialController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//material
+Route::resource('materials', MaterialController::class);
 
 // Halaman form test
 Route::get('/test-pengumpulan-tugas', function () {
