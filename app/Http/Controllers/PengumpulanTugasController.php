@@ -19,7 +19,7 @@ class PengumpulanTugasController extends Controller
      */
     public function index()
     {
-        return view('pengumpulan-tugas');
+        return view('TestKirimEmail');
     }
 
     /**
