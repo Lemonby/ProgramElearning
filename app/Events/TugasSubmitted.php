@@ -16,7 +16,7 @@ class TugasSubmitted
     use Dispatchable, SerializesModels;
 
     public function __construct(
-        public PengumpulanTugas $submission,
+        public string $submission,
         public string $judulTugas,
         public string $namaSiswa,
     ) {

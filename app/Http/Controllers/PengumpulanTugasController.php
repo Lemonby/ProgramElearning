@@ -48,4 +48,36 @@ class PengumpulanTugasController extends Controller
             return redirect()->back()->with('error', 'Gagal menyimpan tugas: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Test kirim email pengumpulan tugas
+     * 
+     * @param \Illuminate\Http\Request: dipake untuk ambil input dari form test (judulTugas, namaSiswa, fileTugas)
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function kirimEmailPengumpulanTugas(\Illuminate\Http\Request $request)
+    {
+        try {
+            $judulTugas = $request->input('judulTugas');
+            $namaSiswa = $request->input('namaSiswa');
+            $fileTugas = $request->file('fileTugas');
+
+            // Validasi input
+            if (!$judulTugas || !$namaSiswa || !$fileTugas) {
+                return redirect()->back()->with('error', 'Judul tugas, nama siswa, dan file tugas harus diisi!');
+            }
+
+            // Dispatch event untuk kirim email
+            \App\Events\TugasSubmitted::dispatch(
+                $fileTugas->getClientOriginalName(), // bisa juga disimpan dulu lalu kirim path file
+                $judulTugas,
+                $namaSiswa,
+            );
+
+            return redirect()->back()->with('success', 'Email test berhasil dikirim ke ' . config('mail.from.address'));
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal mengirim email: ' . $e->getMessage());
+        }
+    }
 }
