@@ -40,7 +40,7 @@ class PengumpulanTugas extends Model
             'assignment_id' => $assignmentId,
             'member_id' => $memberId,
             'file_url' => $fileUrl,
-            // submitted_at otomatis terisi dari migration (useCurrent())
+            'submitted_at' => now() // otomatis terisi dari migration (useCurrent())
         ]);
     }
 }

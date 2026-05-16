@@ -34,6 +34,6 @@ Route::get('/form-pengumpulan-tugas', function () {
 })->name('form-pengumpulan-tugas');
 
 // Proses submit untuk kirim email
-Route::post('/pengumpulan-tugas', [PengumpulanTugasController::class, 'kirimEmailPengumpulanTugas'])->name('pengumpulan_tugas.store');
+Route::post('/pengumpulan-tugas', [PengumpulanTugasController::class, 'kirimEmailPengumpulanTugas'])->name('pengumpulan_tugas.store'); // nanti bakal ganti function pakai "PengumpulanTugasController.simpanTugas"
 
 require __DIR__.'/auth.php';

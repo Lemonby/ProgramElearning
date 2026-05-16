@@ -33,7 +33,7 @@ class PengumpulanTugasService
         $submission = PengumpulanTugas::simpanTugas($assignmentId, $memberId, $fileUrl);
         
         // Trigger Event (akan di-handle oleh Listener)
-        TugasSubmitted::dispatch($submission, $judulTugas, $namaSiswa);
+        // TugasSubmitted::dispatch($submission, $judulTugas, $namaSiswa);
         
         return $submission;
     }

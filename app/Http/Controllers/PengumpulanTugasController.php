@@ -40,8 +40,8 @@ class PengumpulanTugasController extends Controller
                 judulTugas: $request->input('judulTugas'),
                 namaSiswa: $request->input('namaSiswa'),
             );
-            // Email otomatis terkirim via Event & Listener (TugasSubmitted -> SendTugasNotification)
 
+            // Email otomatis terkirim via Event & Listener (TugasSubmitted -> SendTugasNotification)
             return redirect()->back()->with('success', 'Tugas berhasil dikumpulkan!');
 
         } catch (\Exception $e) {
