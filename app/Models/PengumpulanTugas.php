@@ -12,7 +12,7 @@ class PengumpulanTugas extends Model
     protected $casts = [
         'submitted_at' => 'datetime',
         'graded_at' => 'datetime',
-    ];
+    ]; // casting untuk tanggal
 
     // Relasi ke Assignment
     public function assignment()

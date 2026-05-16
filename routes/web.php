@@ -20,12 +20,12 @@ Route::middleware('auth')->group(function () {
 
 
 // Halaman form test
-Route::get('/test-pengumpulan-tugas', function () {
+Route::get('/form-pengumpulan-tugas', function () {
     return view('TestKirimEmail');
-});
+})->name('form-pengumpulan-tugas');
 
 // Proses submit untuk kirim email
-Route::post('/test-pengumpulan-tugas', [PengumpulanTugasController::class, 'kirimEmailPengumpulanTugas'])->name('pengumpulan_tugas.store');
+Route::post('/pengumpulan-tugas', [PengumpulanTugasController::class, 'kirimEmailPengumpulanTugas'])->name('pengumpulan_tugas.store');
 
 
 require __DIR__.'/auth.php';

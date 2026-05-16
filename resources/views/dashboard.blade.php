@@ -14,7 +14,7 @@
             </div>
             {{-- link menuju pengumpulan tugas --}}
             <div class="mt-4">
-                <a href="{{ route('test-pengumpulan-tugas') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('form-pengumpulan-tugas') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Pengumpulan Tugas
                 </a>
             </div>

@@ -17,8 +17,6 @@ return new class extends Migration
             $table->foreignId('member_id')->constrained('users')->cascadeOnDelete();
             $table->string('file_url');
             $table->timestamp('submitted_at')->useCurrent();
-            // $table->decimal('grade', 5, 2)->nullable();
-            // $table->text('feedback')->nullable();
             $table->timestamp('graded_at')->nullable();
             
             // Memastikan member hanya bisa mengumpulkan 1 kali per tugas
