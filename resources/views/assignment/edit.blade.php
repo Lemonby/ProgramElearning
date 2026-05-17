@@ -1,17 +1,12 @@
-@extends('layouts.master')
+<x-mentor-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Edit Assignment') }}
+        </h2>
+    </x-slot>
 
-@section('title', 'Edit Assignment: ' . $assignment->title)
-
-@section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-2xl mx-auto">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Edit Assignment</h1>
-            <p class="text-gray-600 mt-2">Ubah informasi assignment: {{ $assignment->title }}</p>
-        </div>
-
-        <!-- Error Messages -->
+    <div class="py-12">
+        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
         @if ($errors->any())
             <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
                 <h3 class="text-red-800 font-semibold mb-3">Terjadi kesalahan:</h3>
@@ -193,6 +188,6 @@
                 </a>
             </div>
         </form>
+        </div>
     </div>
-</div>
-@endsection
+</x-mentor-layout>

@@ -16,11 +16,11 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified', RedirectIfRole::class])->name('dashboard');
 
 Route::get('/dashboard/member', function () {
-    return view('DashboardMember');
+    return view('dashboard.member');
 })->middleware(['auth', 'verified'])->name('dashboard.member');
 
 Route::get('/dashboard/mentor', function () {
-    return view('DashboardMentor');
+    return view('dashboard.mentor');
 })->middleware(['auth', 'verified'])->name('dashboard.mentor');
 
 Route::middleware('auth')->group(function () { 
@@ -29,20 +29,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Halaman form test
-Route::get('/form-pengumpulan-tugas', function () {
-    return view('TestKirimEmail');
-})->name('form-pengumpulan-tugas');
+// Halaman form test (legacy - untuk testing saja)
+Route::get('/form-pengumpulan-tugas', [PengumpulanTugasController::class, 'index'])
+    ->middleware('auth')
+    ->name('form-pengumpulan-tugas');
 
 // Halaman pengumpulan tugas (show assignments)
-Route::get('/pengumpulan-tugas', [PengumpulanTugasController::class, 'show'])
+Route::get('/submissions', [PengumpulanTugasController::class, 'show'])
     ->middleware('auth')
-    ->name('pengumpulan_tugas.show');
+    ->name('submissions.index');
 
 // Proses submit untuk kirim email
-Route::post('/pengumpulan-tugas', [PengumpulanTugasController::class, 'simpanTugas'])
+Route::post('/submissions', [PengumpulanTugasController::class, 'simpanTugas'])
     ->middleware('auth')
-    ->name('pengumpulan_tugas.store');
+    ->name('submissions.store');
 
 // Assignment Routes (Mentor)
 Route::middleware(['auth', 'verified'])->group(function () {

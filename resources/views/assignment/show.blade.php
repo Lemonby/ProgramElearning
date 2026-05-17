@@ -1,10 +1,12 @@
-@extends('layouts.master')
+<x-mentor-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ $assignment->title }}
+        </h2>
+    </x-slot>
 
-@section('title', 'Detail Assignment: ' . $assignment->title)
-
-@section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-4xl mx-auto">
+    <div class="py-12">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
         <!-- Back Button & Actions -->
         <div class="flex items-center justify-between mb-6">
             <a href="{{ route('assignment.index') }}" class="text-blue-600 hover:text-blue-800 flex items-center gap-2">
@@ -133,5 +135,4 @@
             </div>
         </div>
     </div>
-</div>
-@endsection
+</x-mentor-layout>

@@ -22,7 +22,7 @@ class PengumpulanTugasController extends Controller
     public function show()
     {
         $assignments = Assignments::with('submissions')->get();
-        return view('SubmitAssignment', compact('assignments'));
+        return view('submissions.index', compact('assignments'));
     }
 
     /**

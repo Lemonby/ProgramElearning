@@ -1,29 +1,31 @@
-@extends('layouts.master')
+<x-mentor-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Daftar Assignment') }}
+        </h2>
+    </x-slot>
 
-@section('title', 'Daftar Assignment')
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Button Create Assignment -->
+            <div class="mb-8 flex justify-end">
+                <a 
+                    href="{{ route('assignment.create') }}"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 inline-flex items-center gap-2"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    + Buat Assignment Baru
+                </a>
+            </div>
 
-@section('content')
-<div class="container mx-auto px-4 py-8">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-8">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">Daftar Assignment</h1>
-            <p class="text-gray-600 mt-2">Kelola semua assignment yang Anda buat</p>
-        </div>
-        <a 
-            href="{{ route('assignment.create') }}"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
-        >
-            + Buat Assignment Baru
-        </a>
-    </div>
-
-    <!-- Success Message -->
-    @if (session('success'))
-        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 text-green-700">
-            {{ session('success') }}
-        </div>
-    @endif
+            <!-- Success Message -->
+            @if (session('success'))
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 text-green-700">
+                    {{ session('success') }}
+                </div>
+            @endif
 
     <!-- Empty State -->
     @if ($assignments->isEmpty())
@@ -125,5 +127,6 @@
             @endforeach
         </div>
     @endif
-</div>
-@endsection
+        </div>
+    </div>
+</x-mentor-layout>
