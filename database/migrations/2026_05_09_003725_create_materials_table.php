@@ -12,13 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('materials', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('class_id')->constrained('classes')->cascadeOnDelete();
-            $table->string('title');
-            $table->text('description')->nullable();
-            $table->string('file_url');
-            $table->timestamps();
-        });
+
+    $table->id();
+
+    $table->foreignId('class_id')
+          ->constrained('classes')
+          ->cascadeOnDelete();
+
+    $table->string('title');
+
+    $table->text('description')->nullable();
+
+    $table->string('file_url');
+
+    $table->timestamps();
+});
     }
 
     /**

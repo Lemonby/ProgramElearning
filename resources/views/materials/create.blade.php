@@ -3,39 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Tambah Materi</title>
 </head>
 <body>
-    <h1>Tambah Materi</h1>
 
-    <form action="{{ route('materials.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
+<h1>Tambah Materi</h1>
 
-        <div>
-            <label > Judul </label>
-            <input type="text" name="title">
-        </div>
+<form action="{{ route('materials.store') }}"
+      method="POST"
+      enctype="multipart/form-data">
 
-        <br>
+    @csrf
 
-        <div>
-            <label >Deskripsi</label>
-            <textarea name="deskription" id="" cols="30" rows="10"></textarea>
-        </div>
+    <input type="text"
+           name="title"
+           placeholder="Judul Materi">
 
-        <br>
+    <br><br>
 
-        <div>
-            <label >File Materi</label>
-            <input type="file" name="file">
-        </div>
+    <textarea name="description"
+              placeholder="Deskripsi"></textarea>
 
-        <br>
+    <br><br>
 
-        <button type="submit">
-            Upload
-        </button>
-    </form>
+   <select name="class_id" required>
+
+    @foreach($classes as $class)
+
+    <option value="{{ $class->id }}">
+        {{ $class->description }}
+    </option>
+
+    @endforeach
+
+</select>
+
+    <br><br>
+
+    <input type="file" name="file">
+
+    <br><br>
+
+    <button type="submit">
+        Upload
+    </button>
+
+</form>
+
 </body>
 </html>

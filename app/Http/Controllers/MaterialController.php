@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Material;
-use Illuminate\Support\Facedes\Storage;
+use Illuminate\Support\Facades\Storage;
+use App\Models\ClassModel;
 
 class MaterialController extends Controller
 {
@@ -22,32 +23,37 @@ class MaterialController extends Controller
      * Show the form for creating a new resource.
      */
     public function create()
-    {
-        return view('materials.create');
-    }
+{
+    $classes = ClassModel::all();
+
+    return view('materials.create',
+        compact('classes'));
+}
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
-            'file' => 'required|mimes:pdf,ppt,pptx,doc,docx|max:20480'
-        ]);
+   public function store(Request $request)
+{
+    $request->validate([
+        'class_id' => 'required',
+        'title' => 'required',
+        'file' => 'required|mimes:pdf,ppt,pptx,doc,docx|max:20480'
+    ]);
 
-        $filePath = $request->file('file')->store('materials', 'public');
+    $path = $request->file('file')
+                    ->store('materials', 'public');
 
-        Material::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'file' => $filePath
-        ]);
+    Material::create([
+        'class_id' => $request->class_id,
+        'title' => $request->title,
+        'description' => $request->description,
+        'file_url' => $path,
+    ]);
 
-        return redirect()->route('materials.index')
-        ->with('success', 'Materi Berhasil Ditambahkan');
-    }
+    return redirect()->route('materials.index')
+        ->with('success', 'Materi berhasil ditambahkan');
+}
 
     /**
      * Display the specified resource.

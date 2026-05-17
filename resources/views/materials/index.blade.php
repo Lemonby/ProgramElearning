@@ -18,8 +18,9 @@
     @foreach ($materials as $material )
         <h3>{{ $material->title }}</h3>
         <p>{{ $material->deskription }}</p>
-        <a href="{{ asset('storage/' . $material->file) }}">
-            Download File</a>
+        <a href="{{ asset('storage/' . $material->file_url) }}">
+        Download
+        </a>
 
             <hr>
 
