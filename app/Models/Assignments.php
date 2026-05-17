@@ -6,21 +6,34 @@ use Illuminate\Database\Eloquent\Model;
 
 class Assignments extends Model
 {
-    //
     protected $table = 'assignments';
     protected $fillable = [
         'class_id',
         'title',
         'description',
-        'deadline'
-    ];
-    
-    protected $casts = [
-        'deadline' => 'datetime',
+        'deadline',
+        'file_path'
     ];
 
     /**
-     * Relasi ke submissions
+     * Cast attributes to native types.
+     */
+    protected $casts = [
+        'deadline' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /**
+     * Get the class that owns this assignment.
+     */
+    public function class()
+    {
+        return $this->belongsTo(Classes::class, 'class_id');
+    }
+
+    /**
+     * Relasi ke submissions (PengumpulanTugas)
      */
     public function submissions()
     {

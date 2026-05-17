@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PengumpulanTugasController;
+use App\Http\Controllers\AssignmentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -42,5 +43,10 @@ Route::get('/pengumpulan-tugas', [PengumpulanTugasController::class, 'show'])
 Route::post('/pengumpulan-tugas', [PengumpulanTugasController::class, 'simpanTugas'])
     ->middleware('auth')
     ->name('pengumpulan_tugas.store');
+
+// Assignment Routes (Mentor)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('assignment', AssignmentController::class);
+});
 
 require __DIR__.'/auth.php';
