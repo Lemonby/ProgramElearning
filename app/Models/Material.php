@@ -3,15 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Material extends Model
 {
-    //
-    protected $table = 'materials';
+    use HasFactory;
+
     protected $fillable = [
         'class_id',
         'title',
         'description',
-        'file_url'
+        'file_url',
     ];
 }

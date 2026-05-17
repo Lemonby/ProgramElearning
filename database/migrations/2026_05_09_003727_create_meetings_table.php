@@ -11,14 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('meetings', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('class_id')->constrained('classes')->cascadeOnDelete();
-            $table->string('title');
-            $table->dateTime('meeting_time');
-            $table->string('meeting_link')->nullable();
-            $table->timestamps();
-        });
+       Schema::create('meetings', function (Blueprint $table) {
+    $table->id();
+
+    $table->foreignId('mentor_id')
+          ->constrained('users')
+          ->onDelete('cascade');
+    $table->string('title');
+    $table->date('meeting_date');
+    $table->time('meeting_time');
+    $table->string('meeting_link');
+    $table->text('description')->nullable();
+    $table->timestamps();
+});
     }
 
     /**

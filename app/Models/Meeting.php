@@ -3,15 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Meeting extends Model
 {
-    //
-    protected $table = 'meetings';
+    use HasFactory;
+
     protected $fillable = [
-        'class_id',
+        'mentor_id',
         'title',
+        'meeting_date',
         'meeting_time',
-        'meeting_link'
+        'meeting_link',
+        'description',
     ];
 }
