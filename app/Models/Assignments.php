@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\PengumpulanTugas;
 
 class Assignments extends Model
 {
@@ -37,6 +38,6 @@ class Assignments extends Model
      */
     public function submissions()
     {
-        return $this->hasMany('App\Models\PengumpulanTugas', 'assignment_id');
+        return $this->hasMany(PengumpulanTugas::class, 'assignment_id', 'id');
     }
 }

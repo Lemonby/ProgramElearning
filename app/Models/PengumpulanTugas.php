@@ -6,9 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class PengumpulanTugas extends Model
 {
+    // Disable timestamps karena tabel submissions tidak punya updated_at & created_at
+    public $timestamps = false;
+
+    // Nama tabel di database
+    protected $table = 'submissions';
+
     // Konfigurasi model
-    protected $table = 'submissions'; // nama tabel di database
-    protected $fillable = ['assignment_id', 'member_id', 'file_url', 'is_upload']; // field yang bisa di-fill
+    protected $fillable = [
+        'assignment_id', 
+        'member_id', 
+        'file_url', 
+        'is_upload',
+        'submitted_at',
+        'graded_at'
+    ];
     protected $casts = [
         'submitted_at' => 'datetime',
         'graded_at' => 'datetime',
