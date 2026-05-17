@@ -14,4 +14,16 @@ class Assignments extends Model
         'description',
         'deadline'
     ];
+    
+    protected $casts = [
+        'deadline' => 'datetime',
+    ];
+
+    /**
+     * Relasi ke submissions
+     */
+    public function submissions()
+    {
+        return $this->hasMany('App\Models\PengumpulanTugas', 'assignment_id');
+    }
 }

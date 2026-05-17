@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePengumpulanTugasRequest;
+use App\Models\Assignments;
 use App\Services\PengumpulanTugasService;
+use Illuminate\Support\Facades\Auth;
 
 class PengumpulanTugasController extends Controller
 {
@@ -15,7 +17,16 @@ class PengumpulanTugasController extends Controller
     }
 
     /**
-     * Show form pengumpulan tugas
+     * Show semua assignment dalam bentuk cards
+     */
+    public function show()
+    {
+        $assignments = Assignments::with('submissions')->get();
+        return view('SubmitAssignment', compact('assignments'));
+    }
+
+    /**
+     * Show form pengumpulan tugas (legacy - untuk testing)
      */
     public function index()
     {
@@ -34,7 +45,7 @@ class PengumpulanTugasController extends Controller
             // Service handle semua logic: file upload + simpan db + trigger event
             $submission = $this->tugasService->simpanTugas(
                 assignmentId: $request->input('assignmentId'),
-                memberId: $request->input('memberId'),
+                memberId: Auth::id(), // Auto dari session user
                 fileTugas: $request->file('fileTugas'),
                 linkTugas: $request->input('linkTugas'),
                 judulTugas: $request->input('judulTugas'),
@@ -50,7 +61,7 @@ class PengumpulanTugasController extends Controller
     }
 
     /**
-     * Test kirim email pengumpulan tugas
+     * Test kirim email pengumpulan tugas (legacy - untuk testing saja)
      * 
      * @param \Illuminate\Http\Request: dipake untuk ambil input dari form test (judulTugas, namaSiswa, fileTugas)
      * @return \Illuminate\Http\RedirectResponse

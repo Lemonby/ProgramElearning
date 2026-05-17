@@ -8,7 +8,7 @@ class PengumpulanTugas extends Model
 {
     // Konfigurasi model
     protected $table = 'submissions'; // nama tabel di database
-    protected $fillable = ['assignment_id', 'member_id', 'file_url']; // field yang bisa di-fill
+    protected $fillable = ['assignment_id', 'member_id', 'file_url', 'is_upload']; // field yang bisa di-fill
     protected $casts = [
         'submitted_at' => 'datetime',
         'graded_at' => 'datetime',
@@ -17,7 +17,7 @@ class PengumpulanTugas extends Model
     // Relasi ke Assignment
     public function assignment()
     {
-        return $this->belongsTo('App\Models\Assignment');
+        return $this->belongsTo('App\Models\Assignments');
     }
 
     // Relasi ke User (member/siswa)
@@ -40,6 +40,7 @@ class PengumpulanTugas extends Model
             'assignment_id' => $assignmentId,
             'member_id' => $memberId,
             'file_url' => $fileUrl,
+            'is_upload' => 'sudah',
             'submitted_at' => now() // otomatis terisi dari migration (useCurrent())
         ]);
     }

@@ -33,7 +33,14 @@ Route::get('/form-pengumpulan-tugas', function () {
     return view('TestKirimEmail');
 })->name('form-pengumpulan-tugas');
 
+// Halaman pengumpulan tugas (show assignments)
+Route::get('/pengumpulan-tugas', [PengumpulanTugasController::class, 'show'])
+    ->middleware('auth')
+    ->name('pengumpulan_tugas.show');
+
 // Proses submit untuk kirim email
-Route::post('/pengumpulan-tugas', [PengumpulanTugasController::class, 'kirimEmailPengumpulanTugas'])->name('pengumpulan_tugas.store'); // nanti bakal ganti function pakai "PengumpulanTugasController.simpanTugas"
+Route::post('/pengumpulan-tugas', [PengumpulanTugasController::class, 'simpanTugas'])
+    ->middleware('auth')
+    ->name('pengumpulan_tugas.store');
 
 require __DIR__.'/auth.php';

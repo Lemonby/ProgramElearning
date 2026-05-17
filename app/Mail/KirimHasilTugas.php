@@ -2,6 +2,8 @@
 
 namespace App\Mail;
 
+use App\Models\Assignments;
+use App\Models\PengumpulanTugas;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -14,15 +16,17 @@ class KirimHasilTugas extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $namaTugas;
-    public $namaSiswa;
+    public Assignments $assignment;
+    public PengumpulanTugas $submission;
+    public string $namaSiswa;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($namaTugas, $namaSiswa, $pesan = null)
+    public function __construct(Assignments $assignment, PengumpulanTugas $submission, string $namaSiswa)
     {
-        $this->namaTugas = $namaTugas;
+        $this->assignment = $assignment;
+        $this->submission = $submission;
         $this->namaSiswa = $namaSiswa;
     }
 
@@ -32,7 +36,7 @@ class KirimHasilTugas extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Pengumpulan Tugas - ' . $this->namaTugas . ' Berhasil Terkirim !',
+            subject: 'Pengumpulan Tugas - ' . $this->assignment->title . ' Berhasil Diterima',
         );
     }
 
@@ -44,9 +48,12 @@ class KirimHasilTugas extends Mailable
         return new Content(
             view: 'PengumpulanTugas',
             with: [
-                'namaTugas' => $this->namaTugas,
+                'assignment' => $this->assignment,
+                'submission' => $this->submission,
                 'namaSiswa' => $this->namaSiswa,
-                'pesan' => $this->pesan ?? 'Ini adalah email test untuk memastikan bahwa pengiriman email berfungsi dengan baik. Jika Anda menerima email ini, berarti konfigurasi email sudah benar.',
+                'judulTugas' => $this->assignment->title,
+                'tanggalSubmit' => $this->submission->submitted_at->format('d M Y H:i'),
+                'batasTugas' => $this->assignment->deadline->format('d M Y H:i'),
             ],
         );
     }

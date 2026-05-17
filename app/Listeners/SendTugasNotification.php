@@ -13,8 +13,12 @@ class SendTugasNotification
      */
     public function handle(TugasSubmitted $event): void
     {
+        // Fetch assignment dari submission
+        $assignment = $event->submission->assignment;
+        
+        // Kirim email dengan assignment dan submission
         Mail::to('magungsomomiharjo@gmail.com')->send(
-            new KirimHasilTugas($event->judulTugas, $event->namaSiswa)
+            new KirimHasilTugas($assignment, $event->submission, $event->namaSiswa)
         );
     }
 }

@@ -21,10 +21,17 @@
         <form action="{{ route('pengumpulan_tugas.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="mb-4">
-                <label class="block text-sm font-medium mb-2">Judul Tugas</label>
-                <input type="text" name="judulTugas" 
+                <label class="block text-sm font-medium mb-2">Assignment ID</label>
+                <input type="number" name="assignmentId" 
                     class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
-                    placeholder="Contoh: Pengembangan Fitur Tracking V2" required>
+                    placeholder="Contoh: 1" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Member ID (Siswa)</label>
+                <input type="number" name="memberId" 
+                    class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                    placeholder="Contoh: 2" required>
             </div>
 
             <div class="mb-4">
@@ -33,13 +40,27 @@
                     class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                     placeholder="Contoh: John Doe" required>
             </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Judul Tugas (Opsional)</label>
+                <input type="text" name="judulTugas" 
+                    class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                    placeholder="Contoh: Pengembangan Fitur Tracking V2">
+            </div>
             
-            {{-- kirim file tugas --}}
+            {{-- kirim file tugas atau link --}}
             <div class="mb-4">
                 <label class="block text-sm font-medium mb-2">File Tugas</label>
                 <input type="file" name="fileTugas" 
                     class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
-                    placeholder="Pilih file tugas" required>
+                    placeholder="Pilih file tugas">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Link Tugas (Opsional)</label>
+                <input type="url" name="linkTugas" 
+                    class="w-full px-4 py-2 rounded-lg bg-slate-700 border border-slate-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                    placeholder="Contoh: https://github.com/...">
             </div>
 
             <button type="submit" 
