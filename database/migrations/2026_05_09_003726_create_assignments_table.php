@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->dateTime('deadline');
+            $table->string('file_path')->nullable(); // Path file atau link assignment
             $table->timestamps();
         });
     }

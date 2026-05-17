@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PengumpulanTugasController;
+use App\Http\Controllers\AssignmentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -35,5 +36,10 @@ Route::get('/form-pengumpulan-tugas', function () {
 
 // Proses submit untuk kirim email
 Route::post('/pengumpulan-tugas', [PengumpulanTugasController::class, 'kirimEmailPengumpulanTugas'])->name('pengumpulan_tugas.store'); // nanti bakal ganti function pakai "PengumpulanTugasController.simpanTugas"
+
+// Assignment Routes (Mentor)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('assignment', AssignmentController::class);
+});
 
 require __DIR__.'/auth.php';
