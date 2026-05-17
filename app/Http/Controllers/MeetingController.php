@@ -28,26 +28,26 @@ class MeetingController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'title' =>'required',
-            'meeting_date' => 'required',
-            'meeting_time' => 'required',
-            'meeting_link' => 'required|url',
-        ]);
+{
+    $request->validate([
+        'title' => 'required',
+        'meeting_date' => 'required',
+        'meeting_time' => 'required',
+        'meeting_link' => 'required',
+    ]);
 
-        Meeting::create([
-            'mentor_id' => 1,
-            'title' => $request->title,
-            'meeting_date' => $request->meeting_date,
-            'meeting_time' => $request->meeting_time,
-            'meeting_link' => $request->meeting_link,
-            'description' => $request->description,
-        ]);
+    Meeting::create([
+        'mentor_id' => 1,
+        'title' => $request->title,
+        'meeting_date' => $request->meeting_date,
+        'meeting_time' => $request->meeting_time,
+        'meeting_link' => $request->meeting_link,
+        'description' => $request->description,
+    ]);
 
-        return redirect()->route('meetings.index')
-            ->with('success', 'Meeting berhasil dibuat');
-        }
+    return redirect()->route('meetings.index')
+        ->with('success', 'Meeting berhasil dibuat');
+}
 
     /**
      * Display the specified resource.
@@ -62,32 +62,32 @@ class MeetingController extends Controller
      */
     public function edit(Meeting $meeting)
     {
-        return view('meeting.edit', compact('meeting'));
+        return view('meetings.edit', compact('meeting'));
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Meeting $meeting)
-    {
-        $request->validate([
-            'title' =>'required',
-            'meeting_date' => 'required',
-            'meeting_time' => 'required',
-            'meeting_link' => 'required|url',
-        ]);
+{
+    $request->validate([
+        'title' => 'required',
+        'meeting_date' => 'required',
+        'meeting_time' => 'required',
+        'meeting_link' => 'required',
+    ]);
 
-        $meeting->update([
-            'title' =>$request->title,
-            'meeting_date' => $request->meeting_date,
-            'meeting_time' => $request->meeting_time,
-            'meeting_link' => $request->meeting_link,
-            'description' => $request->description,
-        ]);
+    $meeting->update([
+        'title' => $request->title,
+        'meeting_date' => $request->meeting_date,
+        'meeting_time' => $request->meeting_time,
+        'meeting_link' => $request->meeting_link,
+        'description' => $request->description,
+    ]);
 
-        return redirect()->route('meetings.index')
-            ->with('success', 'Meeting berhasil diupdate');
-    }
+    return redirect()->route('meetings.index')
+        ->with('success', 'Meeting berhasil diupdate');
+}
 
     /**
      * Remove the specified resource from storage.
@@ -96,7 +96,7 @@ class MeetingController extends Controller
     {
       $meeting->delete(); 
 
-      return redirect()->route('meeting.index')
+      return redirect()->route('meetings.index')
         ->with('success', 'Meeting berhasil dihapus');
     }
 }

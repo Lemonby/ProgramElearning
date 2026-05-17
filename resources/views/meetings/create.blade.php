@@ -8,7 +8,15 @@
 </head>
 <body>
     <h1>Tambah Meeting</h1>
+@if ($errors->any())
 
+    @foreach ($errors->all() as $error)
+
+        <p>{{ $error }}</p>
+
+    @endforeach
+
+@endif
 <form action="{{ route('meetings.store') }}"
       method="POST">
 
@@ -32,18 +40,18 @@
 
     <input type="text"
            name="meeting_link"
-           placeholder="Link Zoom/Gmeet">
+           placeholder="Link Meeting">
 
     <br><br>
 
-    <textarea name="description"
-              placeholder="Deskripsi"></textarea>
+    <textarea name="description"></textarea>
 
     <br><br>
 
     <button type="submit">
         Simpan
     </button>
+
 </form>
 </body>
 </html>

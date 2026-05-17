@@ -8,7 +8,15 @@
 </head>
 <body>
     <h1>Edit Meeting</h1>
+@if ($errors->any())
 
+    @foreach ($errors->all() as $error)
+
+        <p>{{ $error }}</p>
+
+    @endforeach
+
+@endif
 <form action="{{ route('meetings.update', $meeting->id) }}"
       method="POST">
 
