@@ -10,13 +10,19 @@
             <!-- Success/Error Messages -->
             @if (session('success'))
                 <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 text-green-700">
-                    {{ session('success') }}
+                    <span class="font-semibold">✓ Sukses!</span> {{ session('success') }}
                 </div>
             @endif
 
             @if (session('error'))
                 <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-red-700">
-                    {{ session('error') }}
+                    <span class="font-semibold">⚠ Gagal!</span> {{ session('error') }}
+                </div>
+            @endif
+
+            @if (session('info'))
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-blue-700">
+                    <span class="font-semibold">ℹ Info:</span> {{ session('info') }}
                 </div>
             @endif
 
@@ -88,15 +94,21 @@
 
                                 <!-- Action Buttons -->
                                 <div class="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
-                                    <button type="button"
-                                        onclick="openSubmissionModal({{ $assignment->id }}, '{{ addslashes($assignment->title) }}')"
-                                        class="flex-1 @if ($userSubmission) bg-blue-100 hover:bg-blue-200 text-blue-700 @else bg-blue-600 hover:bg-blue-700 text-white @endif font-semibold py-2 rounded-lg transition-colors text-sm">
-                                        @if ($userSubmission)
+                                    @if ($userSubmission)
+                                        <a href="{{ route('submissions.show', $userSubmission->id) }}"
+                                            class="flex-1 bg-green-100 hover:bg-green-200 text-green-700 font-semibold py-2 px-4 rounded-lg transition-colors text-sm text-center">
+                                            👁️ Lihat Detail
+                                        </a>
+                                        <a href="{{ route('submissions.edit', $userSubmission->id) }}"
+                                            class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-2 px-4 rounded-lg transition-colors text-sm text-center">
                                             ✏️ Ubah
-                                        @else
+                                        </a>
+                                    @else
+                                        <a href="{{ route('submissions.create', $assignment->id) }}"
+                                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm text-center">
                                             📤 Kumpulkan
-                                        @endif
-                                    </button>
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -109,144 +121,4 @@
             @endif
         </div>
     </div>
-
-    <!-- Modal Submission -->
-    <div id="submissionModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <!-- Modal Header -->
-            <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 sticky top-0 flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-bold text-white">Kumpulkan Tugas</h2>
-                    <p id="modalAssignmentTitle" class="text-blue-100 text-sm mt-1"></p>
-                </div>
-                <button type="button" onclick="closeSubmissionModal()" class="text-white text-2xl hover:text-blue-100">
-                    ✕
-                </button>
-            </div>
-
-            <!-- Modal Body -->
-            <form id="submissionForm" action="{{ route('submissions.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
-                @csrf
-
-                <!-- Hidden Fields -->
-                <input type="hidden" id="assignmentId" name="assignmentId">
-                <input type="hidden" id="memberId" name="memberId" value="{{ auth()->id() }}">
-
-                <!-- Nama Siswa (readonly) -->
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nama Anda</label>
-                    <input type="text"
-                        value="{{ auth()->user()->name }}"
-                        readonly
-                        class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 cursor-not-allowed">
-                    <input type="hidden" name="namaSiswa" value="{{ auth()->user()->name }}">
-                </div>
-
-                <!-- Judul Tugas (readonly) -->
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Judul Tugas</label>
-                    <input type="text"
-                        id="judulTugas"
-                        name="judulTugas"
-                        readonly
-                        class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 cursor-not-allowed">
-                </div>
-
-                <!-- File Upload atau Link (dengan tab selection) -->
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cara Pengumpulan</label>
-                    <div class="flex gap-2 mb-3">
-                        <button type="button"
-                            onclick="switchTab('file')"
-                            class="flex-1 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold transition-all"
-                            id="tabFile">
-                            📁 Upload File
-                        </button>
-                        <button type="button"
-                            onclick="switchTab('link')"
-                            class="flex-1 px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600"
-                            id="tabLink">
-                            🔗 Link
-                        </button>
-                    </div>
-
-                    <!-- File Input -->
-                    <div id="fileSection" class="mb-2">
-                        <input type="file" name="fileTugas"
-                            class="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-gray-900 dark:text-gray-100"
-                            accept=".pdf,.doc,.docx,.zip,.rar,.txt,.xlsx">
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">📦 Format: PDF, DOC, DOCX, ZIP, RAR (Max 5MB)</p>
-                    </div>
-
-                    <!-- Link Input -->
-                    <div id="linkSection" class="mb-2 hidden">
-                        <input type="url" name="linkTugas"
-                            class="w-full px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-gray-900 dark:text-gray-100"
-                            placeholder="https://github.com/... atau https://drive.google.com/...">
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">🔗 Masukkan link repositori atau drive</p>
-                    </div>
-                </div>
-
-                <!-- Buttons -->
-                <div class="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <button type="button"
-                        onclick="closeSubmissionModal()"
-                        class="flex-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-semibold py-2 rounded-lg transition-colors">
-                        Batal
-                    </button>
-                    <button type="submit"
-                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors">
-                        ✓ Kumpulkan
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    @push('scripts')
-    <script>
-        function openSubmissionModal(assignmentId, title) {
-            document.getElementById('assignmentId').value = assignmentId;
-            document.getElementById('judulTugas').value = title;
-            document.getElementById('modalAssignmentTitle').textContent = title;
-            document.getElementById('submissionModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeSubmissionModal() {
-            document.getElementById('submissionModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            document.getElementById('submissionForm').reset();
-        }
-
-        function switchTab(tab) {
-            if (tab === 'file') {
-                document.getElementById('fileSection').classList.remove('hidden');
-                document.getElementById('linkSection').classList.add('hidden');
-                document.getElementById('tabFile').classList.add('bg-blue-600', 'text-white');
-                document.getElementById('tabFile').classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
-                document.getElementById('tabLink').classList.remove('bg-blue-600', 'text-white');
-                document.getElementById('tabLink').classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
-                document.querySelector('input[name="fileTugas"]').required = true;
-                document.querySelector('input[name="linkTugas"]').required = false;
-            } else {
-                document.getElementById('fileSection').classList.add('hidden');
-                document.getElementById('linkSection').classList.remove('hidden');
-                document.getElementById('tabLink').classList.add('bg-blue-600', 'text-white');
-                document.getElementById('tabLink').classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
-                document.getElementById('tabFile').classList.remove('bg-blue-600', 'text-white');
-                document.getElementById('tabFile').classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
-                document.querySelector('input[name="fileTugas"]').required = false;
-                document.querySelector('input[name="linkTugas"]').required = true;
-            }
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('submissionModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeSubmissionModal();
-            }
-        });
-    </script>
-    @endpush
 </x-member-layout>

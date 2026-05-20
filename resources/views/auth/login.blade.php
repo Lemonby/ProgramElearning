@@ -13,9 +13,14 @@
         <div class="relative z-10 w-full max-w-md bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/10 shadow-2xl">
 
             <!-- title -->
-            <h1 class="text-4xl font-bold text-white text-center mb-8">
-                WELCOME
+            <h1 class="text-4xl font-bold text-white text-center mb-2">
+                WELCOME BACK
             </h1>
+
+            <!-- subtitle -->
+            <p class="text-center text-gray-300 text-sm mb-8">
+                Sign in to your account to continue
+            </p>
 
             <!-- Session Status -->
             <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -94,24 +99,37 @@
                 </div>
 
                 <!-- Button -->
-                <div class="flex items-center justify-end mt-4">
+                <div class="flex items-center justify-between mt-6">
 
                     @if (Route::has('password.request'))
                         <a
-                            class="underline text-sm text-gray-300 hover:text-white"
+                            class="text-sm text-gray-300 hover:text-white transition"
                             href="{{ route('password.request') }}"
                         >
-                            {{ __('Forgot your password?') }}
+                            {{ __('Forgot password?') }}
                         </a>
                     @endif
 
-                    <x-primary-button class="ms-3">
+                    <x-primary-button>
                         {{ __('Log in') }}
                     </x-primary-button>
 
                 </div>
 
             </form>
+
+            <!-- Register Link -->
+            <div class="mt-8 text-center">
+                <p class="text-sm text-gray-300">
+                    {{ __("Don't have an account?") }}
+                    <a
+                        href="{{ route('register') }}"
+                        class="text-purple-400 hover:text-purple-300 transition font-semibold"
+                    >
+                        {{ __('Register here') }}
+                    </a>
+                </p>
+            </div>
 
         </div>
 
