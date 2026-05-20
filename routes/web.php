@@ -14,10 +14,9 @@ Route::resource('materials', MaterialController::class)->middleware(['auth', 've
 
 Route::resource('meetings', MeetingController::class);
 
-Route::resource('attendances', AttendanceController::class);
+Route::resource('attendances', AttendanceController::class)->middleware(['auth', 'verified']);
 
-Route::get('/my-attendance',
-    [AttendanceController::class, 'myAttendance']);
+Route::get('/attendances/{meetingId}/members', [AttendanceController::class, 'getMeetingMembers'])->middleware(['auth', 'verified'])->name('attendances.getMeetingMembers');
 
 Route::get('/', function () {
     return view('welcome');
