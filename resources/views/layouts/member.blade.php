@@ -36,6 +36,9 @@
                                 <x-nav-link :href="route('submissions.index')" :active="request()->routeIs('submissions.*')">
                                     {{ __('Submission') }}
                                 </x-nav-link>
+                                <x-nav-link :href="route('member-materials.index')" :active="request()->routeIs('member-materials.*')">
+                                    {{ __('Materi') }}
+                                </x-nav-link>
                             </div>
                         </div>
 
@@ -92,6 +95,9 @@
                         </x-responsive-nav-link>
                         <x-responsive-nav-link :href="route('submissions.index')" :active="request()->routeIs('submissions.*')">
                             {{ __('Submission') }}
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('member-materials.index')" :active="request()->routeIs('member-materials.*')">
+                            {{ __('Materi') }}
                         </x-responsive-nav-link>
                     </div>
 

@@ -11,7 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'is_member' => \App\Http\Middleware\IsMember::class,
+            'is_mentor' => \App\Http\Middleware\IsMentor::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
