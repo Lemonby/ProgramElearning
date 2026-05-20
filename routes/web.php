@@ -10,7 +10,7 @@ use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\SubmissionController;
 
 
-Route::resource('materials', MaterialController::class);
+Route::resource('materials', MaterialController::class)->middleware(['auth', 'verified']);
 
 Route::resource('meetings', MeetingController::class);
 

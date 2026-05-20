@@ -33,6 +33,9 @@
                                 <x-nav-link :href="route('dashboard.mentor')" :active="request()->routeIs('dashboard.mentor')">
                                     {{ __('Dashboard') }}
                                 </x-nav-link>
+                                <x-nav-link :href="route('materials.index')" :active="request()->routeIs('materials.*')">
+                                    {{ __('Materi') }}
+                                </x-nav-link>
                                 <x-nav-link :href="route('assignment.index')" :active="request()->routeIs('assignment.*')">
                                     {{ __('Assignment') }}
                                 </x-nav-link>
@@ -89,6 +92,9 @@
                     <div class="pt-2 pb-3 space-y-1">
                         <x-responsive-nav-link :href="route('dashboard.mentor')" :active="request()->routeIs('dashboard.mentor')">
                             {{ __('Dashboard') }}
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('materials.index')" :active="request()->routeIs('materials.*')">
+                            {{ __('Materi') }}
                         </x-responsive-nav-link>
                         <x-responsive-nav-link :href="route('assignment.index')" :active="request()->routeIs('assignment.*')">
                             {{ __('Assignment') }}

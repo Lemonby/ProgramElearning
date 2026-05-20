@@ -15,4 +15,12 @@ class Material extends Model
         'description',
         'file_url',
     ];
+
+    /**
+     * Get the class that owns the material.
+     */
+    public function class()
+    {
+        return $this->belongsTo(ClassModel::class, 'class_id');
+    }
 }

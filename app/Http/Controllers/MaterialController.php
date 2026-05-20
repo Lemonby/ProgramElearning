@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Material;
 use Illuminate\Support\Facades\Storage;
 use App\Models\ClassModel;
+use App\Http\Requests\StoreMaterialRequest;
+use App\Http\Requests\UpdateMaterialRequest;
 
 class MaterialController extends Controller
 {
@@ -14,9 +16,9 @@ class MaterialController extends Controller
      */
     public function index()
     {
-        $materials = Material::latest()->get();
+        $materials = Material::with('class')->latest()->get();
 
-        return view('materials.index', compact ('materials'));
+        return view('materials.index', compact('materials'));
     }
 
     /**
@@ -33,21 +35,17 @@ class MaterialController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-   public function store(Request $request)
+   public function store(StoreMaterialRequest $request)
 {
-    $request->validate([
-        'class_id' => 'required',
-        'title' => 'required',
-        'file' => 'required|mimes:pdf,ppt,pptx,doc,docx|max:20480'
-    ]);
+    $validated = $request->validated();
 
     $path = $request->file('file')
                     ->store('materials', 'public');
 
     Material::create([
-        'class_id' => $request->class_id,
-        'title' => $request->title,
-        'description' => $request->description,
+        'class_id' => $validated['class_id'],
+        'title' => $validated['title'],
+        'description' => $validated['description'],
         'file_url' => $path,
     ]);
 
@@ -66,36 +64,37 @@ class MaterialController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Material $material)
     {
-        return view('materials.edit', compact('material'));
+        $classes = ClassModel::all();
+        return view('materials.edit', compact('material', 'classes'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Material $material)
+    public function update(UpdateMaterialRequest $request, Material $material)
     {
-        $request->validate([
-            'title' => 'required'
-        ]);
+        $validated = $request->validated();
 
         if($request->hasFile('file')){
-            storage::disk('public')->delete($material->file);
+            Storage::disk('public')->delete($material->file_url);
 
             $filePath = $request->file('file')
             ->store('materials', 'public');
 
-            $material->file = $filePath;
+            $validated['file_url'] = $filePath;
         }
 
         $material->update([
-            'title' => $request->title,
-            'description' => $request->description,
-            'file' => $material->file
+            'class_id' => $validated['class_id'],
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'file_url' => $validated['file_url'] ?? $material->file_url
         ]);
 
-        return redirect()->route('materials.index');
+        return redirect()->route('materials.index')
+            ->with('success', 'Materi berhasil diperbarui');
     }   
 
     /**
@@ -103,11 +102,10 @@ class MaterialController extends Controller
      */
     public function destroy(Material $material)
     {
-        storage::disk('public')->delete($material->file);
+        Storage::disk('public')->delete($material->file_url);
         $material->delete();
 
         return redirect()->route('materials.index')
-        ->with('success', 'Materi Berhasil Dihapus');
-        
+            ->with('success', 'Materi berhasil dihapus');
     }
 }
