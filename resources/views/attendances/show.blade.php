@@ -34,25 +34,25 @@
                     <div class="grid grid-cols-4 gap-3">
                         <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg text-center">
                             <p class="text-2xl font-bold text-green-700 dark:text-green-300">
-                                {{ $meeting->attendances->where('status', 'hadir')->count() }}
+                                {{ $meeting->getPresentCount() }}
                             </p>
                             <p class="text-sm text-gray-600 dark:text-gray-400">Hadir</p>
                         </div>
                         <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg text-center">
                             <p class="text-2xl font-bold text-yellow-700 dark:text-yellow-300">
-                                {{ $meeting->attendances->where('status', 'izin')->count() }}
+                                {{ $meeting->getExcusedCount() }}
                             </p>
                             <p class="text-sm text-gray-600 dark:text-gray-400">Izin</p>
                         </div>
                         <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg text-center">
                             <p class="text-2xl font-bold text-orange-700 dark:text-orange-300">
-                                {{ $meeting->attendances->where('status', 'sakit')->count() }}
+                                {{ $meeting->getSickCount() }}
                             </p>
                             <p class="text-sm text-gray-600 dark:text-gray-400">Sakit</p>
                         </div>
                         <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg text-center">
                             <p class="text-2xl font-bold text-red-700 dark:text-red-300">
-                                {{ $meeting->attendances->where('status', 'alpa')->count() }}
+                                {{ $meeting->getAbsentCount() }}
                             </p>
                             <p class="text-sm text-gray-600 dark:text-gray-400">Alpa</p>
                         </div>

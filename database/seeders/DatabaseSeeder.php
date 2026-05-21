@@ -12,9 +12,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Memanggil seeder MasterData yang sudah kamu buat
+        // Memanggil seeder MasterData dan MeetingSeeder
         $this->call([
             MasterData::class,
+            MeetingSeeder::class,
         ]);
     }
 }

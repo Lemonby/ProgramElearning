@@ -15,8 +15,11 @@ class AttendanceController extends Controller
      */
     public function index()
     {
-        // Show all meetings dengan attendance data
-        $meetings = Meeting::with(['class', 'attendances.member'])
+        // Show meetings dari mentor yang sedang login
+        $authUser = Auth::user();
+        
+        $meetings = Meeting::where('mentor_id', $authUser->id)
+            ->with(['class', 'attendances.member'])
             ->latest('created_at')
             ->get();
 
@@ -28,8 +31,11 @@ class AttendanceController extends Controller
      */
     public function create()
     {
-        // Get meetings yang belum selesai (belum lewat meeting date jika ada)
-        $meetings = Meeting::with('class')
+        $authUser = Auth::user();
+        
+        // Get meetings dari mentor yang sedang login yang belum selesai
+        $meetings = Meeting::where('mentor_id', $authUser->id)
+            ->with('class')
             ->latest('created_at')
             ->get();
 
@@ -41,9 +47,19 @@ class AttendanceController extends Controller
      */
     public function getMeetingMembers($meetingId)
     {
-        $meeting = Meeting::with('class.members')->findOrFail($meetingId);
+        $authUser = Auth::user();
+        $meeting = Meeting::findOrFail($meetingId);
 
-        $members = $meeting->class->members()->get();
+        // Authorization check - hanya mentor dari meeting ini yang bisa akses
+        if ($meeting->mentor_id !== $authUser->id) {
+            return response()->json(['error' => 'Anda tidak memiliki akses ke meeting ini'], 403);
+        }
+
+        // Get members dari kelas yang merupakan student/member (role = 'member')
+        $members = $meeting->class->members()
+            ->whereIn('role', ['member', 'student'])
+            ->orderBy('name')
+            ->get();
         
         // Get existing attendances for this meeting
         $existingAttendances = Attendances::where('meeting_id', $meetingId)
@@ -60,24 +76,44 @@ class AttendanceController extends Controller
      */
     public function store(Request $request)
     {
-        $userId = Auth::id();
-
+        $authUser = Auth::user();
+        
         $request->validate([
             'meeting_id' => 'required|exists:meetings,id',
-            'attendances' => 'required|array',
+            'attendances' => 'required|array|min:1',
             'attendances.*.member_id' => 'required|exists:users,id',
             'attendances.*.status' => 'required|in:hadir,izin,sakit,alpa',
         ], [
+            'meeting_id.required' => 'Silakan pilih pertemuan terlebih dahulu',
             'attendances.required' => 'Minimal satu member harus diabsensi',
+            'attendances.min' => 'Minimal satu member harus diabsensi',
             'attendances.*.member_id.required' => 'Member ID diperlukan',
             'attendances.*.status.required' => 'Status kehadiran diperlukan',
+            'attendances.*.status.in' => 'Status kehadiran tidak valid',
         ]);
 
         try {
             $meeting = Meeting::findOrFail($request->meeting_id);
             
+            // Authorization check - hanya mentor meeting ini yang bisa manage attendance
+            if ($meeting->mentor_id !== $authUser->id) {
+                return back()->with('error', 'Anda tidak memiliki akses untuk mengubah absensi meeting ini');
+            }
+
+            // Validate all members belong to meeting's class
+            $classMembers = $meeting->class->members()
+                ->whereIn('role', ['member', 'student'])
+                ->pluck('id')
+                ->toArray();
+
             foreach ($request->attendances as $attendance) {
-                // Delete existing attendance jika ada (update)
+                if (!in_array($attendance['member_id'], $classMembers)) {
+                    return back()->with('error', 'Salah satu member bukan bagian dari kelas ini');
+                }
+            }
+            
+            foreach ($request->attendances as $attendance) {
+                // Delete existing attendance jika ada (untuk replace)
                 Attendances::where('meeting_id', $meeting->id)
                     ->where('member_id', $attendance['member_id'])
                     ->delete();
@@ -87,7 +123,7 @@ class AttendanceController extends Controller
                     'meeting_id' => $meeting->id,
                     'member_id' => $attendance['member_id'],
                     'status' => $attendance['status'],
-                    'input_by' => $userId,
+                    'input_by' => $authUser->id,
                 ]);
             }
 
@@ -103,7 +139,14 @@ class AttendanceController extends Controller
      */
     public function show(string $id)
     {
-        $meeting = Meeting::with(['class', 'attendances.member'])->findOrFail($id);
+        $authUser = Auth::user();
+        $meeting = Meeting::with(['class', 'attendances.member', 'attendances.inputBy'])->findOrFail($id);
+        
+        // Authorization check
+        if ($meeting->mentor_id !== $authUser->id) {
+            abort(403, 'Anda tidak memiliki akses ke data absensi ini');
+        }
+        
         return view('attendances.show', compact('meeting'));
     }
 
@@ -112,9 +155,20 @@ class AttendanceController extends Controller
      */
     public function edit($meetingId)
     {
+        $authUser = Auth::user();
         $meeting = Meeting::with(['class.members', 'attendances'])->findOrFail($meetingId);
 
-        $members = $meeting->class->members;
+        // Authorization check
+        if ($meeting->mentor_id !== $authUser->id) {
+            abort(403, 'Anda tidak memiliki akses untuk mengedit absensi ini');
+        }
+
+        // Get members yang merupakan student/member, ordered by name
+        $members = $meeting->class->members()
+            ->whereIn('role', ['member', 'student'])
+            ->orderBy('name')
+            ->get();
+        
         $existingAttendances = $meeting->attendances->pluck('status', 'member_id');
 
         return view('attendances.edit', compact('meeting', 'members', 'existingAttendances'));
@@ -125,16 +179,37 @@ class AttendanceController extends Controller
      */
     public function update(Request $request, $meetingId)
     {
-        $userId = Auth::id();
+        $authUser = Auth::user();
         $meeting = Meeting::findOrFail($meetingId);
 
+        // Authorization check
+        if ($meeting->mentor_id !== $authUser->id) {
+            return back()->with('error', 'Anda tidak memiliki akses untuk mengubah absensi ini');
+        }
+
         $request->validate([
-            'attendances' => 'required|array',
+            'attendances' => 'required|array|min:1',
             'attendances.*.member_id' => 'required|exists:users,id',
             'attendances.*.status' => 'required|in:hadir,izin,sakit,alpa',
+        ], [
+            'attendances.min' => 'Minimal satu member harus diabsensi',
+            'attendances.*.member_id.required' => 'Member ID diperlukan',
+            'attendances.*.status.required' => 'Status kehadiran diperlukan',
         ]);
 
         try {
+            // Validate all members belong to meeting's class
+            $classMembers = $meeting->class->members()
+                ->whereIn('role', ['member', 'student'])
+                ->pluck('id')
+                ->toArray();
+
+            foreach ($request->attendances as $attendance) {
+                if (!in_array($attendance['member_id'], $classMembers)) {
+                    return back()->with('error', 'Salah satu member bukan bagian dari kelas ini');
+                }
+            }
+
             // Delete old attendances
             Attendances::where('meeting_id', $meeting->id)->delete();
 
@@ -144,7 +219,7 @@ class AttendanceController extends Controller
                     'meeting_id' => $meeting->id,
                     'member_id' => $attendance['member_id'],
                     'status' => $attendance['status'],
-                    'input_by' => $userId,
+                    'input_by' => $authUser->id,
                 ]);
             }
 
@@ -160,7 +235,14 @@ class AttendanceController extends Controller
      */
     public function destroy($meetingId)
     {
+        $authUser = Auth::user();
         $meeting = Meeting::findOrFail($meetingId);
+
+        // Authorization check
+        if ($meeting->mentor_id !== $authUser->id) {
+            return back()->with('error', 'Anda tidak memiliki akses untuk menghapus data absensi ini');
+        }
+
         Attendances::where('meeting_id', $meeting->id)->delete();
 
         return redirect()->route('attendances.index')

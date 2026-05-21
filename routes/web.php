@@ -15,9 +15,15 @@ Route::resource('materials', MaterialController::class)->middleware(['auth', 've
 
 Route::resource('meetings', MeetingController::class);
 
-Route::resource('attendances', AttendanceController::class)->middleware(['auth', 'verified']);
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('attendances', AttendanceController::class)->middleware('is_mentor');
+    Route::get('/attendances/{meetingId}/members', [AttendanceController::class, 'getMeetingMembers'])->name('attendances.getMeetingMembers');
+});
 
-Route::get('/attendances/{meetingId}/members', [AttendanceController::class, 'getMeetingMembers'])->middleware(['auth', 'verified'])->name('attendances.getMeetingMembers');
+// Member Attendance - View own attendance history
+Route::middleware(['auth', 'verified', 'is_member'])->group(function () {
+    Route::get('/my-attendance', [AttendanceController::class, 'myAttendance'])->name('attendances.myAttendance');
+});
 
 Route::get('/', function () {
     return view('welcome');
