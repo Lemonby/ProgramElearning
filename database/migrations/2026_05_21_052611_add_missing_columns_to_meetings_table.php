@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('meetings', function (Blueprint $table) {
-            $table->date('meeting_date')->nullable()->after('title');
-            $table->text('description')->nullable()->after('meeting_link');
+            // $table->date('meeting_date')->nullable()->after('title');
+            // $table->text('description')->nullable()->after('meeting_link');
         });
     }
 
@@ -23,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('meetings', function (Blueprint $table) {
-            $table->dropColumn(['meeting_date', 'description']);
+            // $table->dropColumn(['meeting_date', 'description']);
         });
     }
 };

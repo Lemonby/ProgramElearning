@@ -13,7 +13,7 @@ use App\Http\Controllers\SubmissionController;
 
 Route::resource('materials', MaterialController::class)->middleware(['auth', 'verified', 'is_mentor']);
 
-Route::resource('meetings', MeetingController::class);
+Route::resource('meetings', MeetingController::class)->middleware(['auth', 'verified', 'is_mentor']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('attendances', AttendanceController::class)->middleware('is_mentor');

@@ -14,10 +14,13 @@ return new class extends Migration
         // Meetings table sudah punya class_id, jadi migration ini cukup untuk ensure struct
         if (!Schema::hasColumn('meetings', 'class_id')) {
             Schema::table('meetings', function (Blueprint $table) {
-                $table->foreignId('class_id')
+                $table->unsignedBigInteger('class_id')
                       ->after('id')
-                      ->constrained('classes')
-                      ->cascadeOnDelete();
+                      ->nullable();
+                $table->foreign('class_id')
+                      ->references('id')
+                      ->on('classes')
+                      ->onDelete('cascade');
             });
         }
     }

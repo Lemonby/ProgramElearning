@@ -123,7 +123,6 @@
                                     </div>
                                     <div class="flex gap-4">
                                         <label class="flex items-center">
-                                            <input type="radio" name="attendances[${index}][member_id]" value="${member.id}" class="hidden" required>
                                             <input type="radio" name="attendances[${index}][status]" value="hadir" ${currentStatus === 'hadir' ? 'checked' : ''} class="w-4 h-4 text-green-600" required>
                                             <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Hadir</span>
                                         </label>
@@ -154,7 +153,51 @@
                     loading.classList.add('hidden');
                     itemsContainer.innerHTML = `<p class="text-red-600 dark:text-red-400 text-center py-4">Error: ${error.message}</p>`;
                     container.classList.remove('hidden');
+                    console.error('Error loading members:', error);
                 });
         }
+
+        // Form submit validation
+        document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+            const meetingId = document.getElementById('meeting_id').value;
+            const itemsContainer = document.getElementById('attendanceItems');
+            const allInputs = itemsContainer.querySelectorAll('input[name^="attendances"]');
+            
+            if (!meetingId) {
+                e.preventDefault();
+                alert('Silakan pilih pertemuan terlebih dahulu');
+                return false;
+            }
+
+            if (allInputs.length === 0) {
+                e.preventDefault();
+                alert('Silakan pilih pertemuan dan isi absensi member');
+                return false;
+            }
+
+            // Check if all members have status selected
+            const attendanceIndices = new Set();
+            document.querySelectorAll('input[name^="attendances"][name$="[status]"]').forEach(input => {
+                const name = input.name;
+                const match = name.match(/\[(\d+)\]/);
+                if (match) {
+                    attendanceIndices.add(match[1]);
+                }
+            });
+
+            let allStatusSelected = true;
+            attendanceIndices.forEach(index => {
+                const statusInputs = document.querySelectorAll(`input[name="attendances[${index}][status]"]:checked`);
+                if (statusInputs.length === 0) {
+                    allStatusSelected = false;
+                }
+            });
+
+            if (!allStatusSelected) {
+                e.preventDefault();
+                alert('Silakan pilih status kehadiran untuk semua member');
+                return false;
+            }
+        });
     </script>
 </x-mentor-layout>
