@@ -13,7 +13,7 @@ class MeetingController extends Controller
     public function index()
     {
         $classId = auth()->user()->class_id;
-        $meetings = Meeting::where('class_id', $classId)->latest()->get();
+        $meetings = Meeting::query()->where('class_id', $classId)->latest()->get();
         return view('meetings.index', compact('meetings'));
     }
 
@@ -34,6 +34,7 @@ class MeetingController extends Controller
             'title' => 'required',
             'meeting_date' => 'required',
             'meeting_time' => 'required',
+            'type' => 'required|in:online,offline',
             'meeting_link' => 'required',
         ]);
 
@@ -43,6 +44,7 @@ class MeetingController extends Controller
             'title' => $request->title,
             'meeting_date' => $request->meeting_date,
             'meeting_time' => $request->meeting_time,
+            'type' => $request->type,
             'meeting_link' => $request->meeting_link,
             'description' => $request->description,
         ]);
@@ -85,6 +87,7 @@ class MeetingController extends Controller
             'title' => 'required',
             'meeting_date' => 'required',
             'meeting_time' => 'required',
+            'type' => 'required|in:online,offline',
             'meeting_link' => 'required',
         ]);
 
@@ -92,6 +95,7 @@ class MeetingController extends Controller
             'title' => $request->title,
             'meeting_date' => $request->meeting_date,
             'meeting_time' => $request->meeting_time,
+            'type' => $request->type,
             'meeting_link' => $request->meeting_link,
             'description' => $request->description,
         ]);
@@ -110,7 +114,7 @@ class MeetingController extends Controller
             return abort(403, 'Unauthorized');
         }
 
-        $meeting->delete(); 
+        Meeting::query()->whereKey($meeting->id)->delete(); 
 
         return redirect()->route('meetings.index')
             ->with('success', 'Meeting berhasil dihapus');

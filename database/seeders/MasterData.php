@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 use App\Models\User;
 use App\Models\Classes;
@@ -120,7 +121,7 @@ class MasterData extends Seeder
                     'class_id'    => $class->id,
                     'title'       => $topic,
                     'description' => $faker->paragraph(2),
-                    'file_url'    => 'https://storage.example.com/materials/' . \Str::slug($topic) . '.pdf',
+                    'file_url'    => 'https://storage.example.com/materials/' . Str::slug($topic) . '.pdf',
                 ]);
             }
         }
@@ -144,6 +145,7 @@ class MasterData extends Seeder
                     'title'        => "Pertemuan {$k} — {$class->name}",
                     'meeting_date' => $date->toDateString(),
                     'meeting_time' => '19:00:00',
+                    'type'         => $k % 2 === 0 ? 'offline' : 'online',
                     'meeting_link' => 'https://meet.google.com/' . $faker->lexify('???-????-???'),
                     'description'  => $faker->sentence(10),
                 ]);

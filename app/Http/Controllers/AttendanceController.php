@@ -18,7 +18,7 @@ class AttendanceController extends Controller
         // Show meetings dari mentor yang sedang login
         $authUser = Auth::user();
         
-        $meetings = Meeting::where('mentor_id', $authUser->id)
+        $meetings = Meeting::query()->where('mentor_id', $authUser->id)
             ->with(['class', 'attendances.member'])
             ->latest('created_at')
             ->get();
@@ -34,7 +34,7 @@ class AttendanceController extends Controller
         $authUser = Auth::user();
         
         // Get meetings dari mentor yang sedang login yang belum selesai
-        $meetings = Meeting::where('mentor_id', $authUser->id)
+        $meetings = Meeting::query()->where('mentor_id', $authUser->id)
             ->with('class')
             ->latest('created_at')
             ->get();
@@ -62,7 +62,7 @@ class AttendanceController extends Controller
             ->get();
         
         // Get existing attendances for this meeting
-        $existingAttendances = Attendances::where('meeting_id', $meetingId)
+        $existingAttendances = Attendances::query()->where('meeting_id', $meetingId)
             ->pluck('status', 'member_id');
 
         return response()->json([
@@ -114,7 +114,7 @@ class AttendanceController extends Controller
             
             foreach ($request->attendances as $attendance) {
                 // Delete existing attendance jika ada (untuk replace)
-                Attendances::where('meeting_id', $meeting->id)
+                Attendances::query()->where('meeting_id', $meeting->id)
                     ->where('member_id', $attendance['member_id'])
                     ->delete();
 
@@ -211,7 +211,7 @@ class AttendanceController extends Controller
             }
 
             // Delete old attendances
-            Attendances::where('meeting_id', $meeting->id)->delete();
+            Attendances::query()->where('meeting_id', $meeting->id)->delete();
 
             // Create new attendances
             foreach ($request->attendances as $attendance) {
@@ -243,7 +243,7 @@ class AttendanceController extends Controller
             return back()->with('error', 'Anda tidak memiliki akses untuk menghapus data absensi ini');
         }
 
-        Attendances::where('meeting_id', $meeting->id)->delete();
+        Attendances::query()->where('meeting_id', $meeting->id)->delete();
 
         return redirect()->route('attendances.index')
             ->with('success', 'Data absensi untuk meeting ini berhasil dihapus');
@@ -254,12 +254,30 @@ class AttendanceController extends Controller
      */
     public function myAttendance()
     {
-        $memberId = Auth::id();
-        $attendances = Attendances::where('member_id', $memberId)
+        $member = Auth::user();
+
+        $attendances = Attendances::query()
+            ->where('member_id', $member->id)
+            ->whereHas('meeting', function ($query) use ($member) {
+                $query->where('class_id', $member->class_id);
+            })
             ->with(['meeting.class', 'inputBy'])
             ->latest('created_at')
             ->get();
 
-        return view('attendances.my-attendance', compact('attendances'));
+        $summaryCards = collect([
+            ['label' => 'Hadir', 'status' => 'hadir', 'color' => 'emerald'],
+            ['label' => 'Sakit', 'status' => 'sakit', 'color' => 'rose'],
+            ['label' => 'Alpha', 'status' => 'alpa', 'color' => 'amber'],
+        ])->map(function (array $card) use ($attendances) {
+            return [
+                'label' => $card['label'],
+                'status' => $card['status'],
+                'count' => $attendances->where('status', $card['status'])->count(),
+                'color' => $card['color'],
+            ];
+        });
+
+        return view('attendances.my-attendance', compact('attendances', 'summaryCards'));
     }
 }

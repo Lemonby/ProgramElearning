@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PengumpulanTugasController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\SubmissionController;
+use App\Http\Controllers\MemberDashboardController;
 
 
 Route::resource('materials', MaterialController::class)->middleware(['auth', 'verified', 'is_mentor']);
@@ -35,9 +36,9 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified', RedirectIfRole::class])->name('dashboard');
 
-Route::get('/dashboard/member', function () {
-    return view('dashboard.member');
-})->middleware(['auth', 'verified'])->name('dashboard.member');
+Route::get('/dashboard/member', [MemberDashboardController::class, 'index'])
+    ->middleware(['auth', 'verified', 'is_member'])
+    ->name('dashboard.member');
 
 Route::get('/dashboard/mentor', function () {
     return view('dashboard.mentor');

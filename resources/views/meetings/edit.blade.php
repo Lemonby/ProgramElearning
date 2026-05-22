@@ -51,6 +51,18 @@
                         </div>
 
                         <div>
+                            <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Tipe Meeting
+                            </label>
+                            <select name="type" id="type" required
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                                <option value="">Pilih tipe meeting</option>
+                                <option value="online" {{ old('type', $meeting->type) === 'online' ? 'selected' : '' }}>Online</option>
+                                <option value="offline" {{ old('type', $meeting->type) === 'offline' ? 'selected' : '' }}>Offline</option>
+                            </select>
+                        </div>
+
+                        <div>
                             <label for="meeting_link" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Link Meeting
                             </label>

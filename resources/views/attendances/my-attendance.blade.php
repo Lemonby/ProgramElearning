@@ -1,116 +1,89 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Riwayat Kehadiran Saya</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 dark:bg-gray-900">
+<x-member-layout>
+    <x-slot name="header">
+        <h2 class="text-2xl font-bold text-white">Detail Kehadiran</h2>
+    </x-slot>
 
-<div class="py-12">
-    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-            
-            <div class="mb-6">
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Riwayat Kehadiran Saya</h1>
-                <p class="text-gray-600 dark:text-gray-400">Lihat status kehadiran Anda di semua pertemuan</p>
+    <div class="min-h-screen bg-gradient-to-b from-[#020617] to-purple-900 p-4 md:p-8">
+        <div class="max-w-7xl mx-auto space-y-6">
+            <div class="bg-gradient-to-r from-purple-700 to-purple-800 text-white rounded-2xl p-6 md:p-8">
+                <h1 class="text-2xl md:text-4xl font-bold">Riwayat Kehadiran Saya</h1>
+                <p class="text-purple-100 mt-2">Ringkasan status hadir, sakit, dan alpha untuk kelas Anda.</p>
             </div>
 
-            @if($attendances->count() > 0)
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead class="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-gray-700 dark:text-gray-300 font-semibold">No</th>
-                                <th class="px-4 py-3 text-left text-gray-700 dark:text-gray-300 font-semibold">Judul Pertemuan</th>
-                                <th class="px-4 py-3 text-left text-gray-700 dark:text-gray-300 font-semibold">Kelas</th>
-                                <th class="px-4 py-3 text-left text-gray-700 dark:text-gray-300 font-semibold">Status</th>
-                                <th class="px-4 py-3 text-left text-gray-700 dark:text-gray-300 font-semibold">Dicatat Oleh</th>
-                                <th class="px-4 py-3 text-left text-gray-700 dark:text-gray-300 font-semibold">Tanggal</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                            @foreach ($attendances as $index => $attendance)
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                                    <td class="px-4 py-3 text-gray-900 dark:text-gray-100">{{ $index + 1 }}</td>
-                                    <td class="px-4 py-3 text-gray-900 dark:text-gray-100 font-medium">
-                                        {{ $attendance->meeting->title }}
-                                    </td>
-                                    <td class="px-4 py-3 text-gray-700 dark:text-gray-300">
-                                        {{ $attendance->meeting->class->description ?? 'N/A' }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        @php
-                                            $statusColors = [
-                                                'hadir' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-                                                'izin' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-                                                'sakit' => 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-                                                'alpa' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-                                            ];
-                                            $statusLabels = [
-                                                'hadir' => 'Hadir',
-                                                'izin' => 'Izin',
-                                                'sakit' => 'Sakit',
-                                                'alpa' => 'Alpa',
-                                            ];
-                                        @endphp
-                                        <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold {{ $statusColors[$attendance->status] ?? 'bg-gray-100 text-gray-800' }}">
-                                            {{ $statusLabels[$attendance->status] ?? $attendance->status }}
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-3 text-gray-700 dark:text-gray-300">
-                                        {{ $attendance->inputBy->name ?? 'System' }}
-                                    </td>
-                                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400 text-xs">
-                                        {{ $attendance->created_at->format('d/m/Y H:i') }}
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                @foreach ($summaryCards as $card)
+                    <div class="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-5 text-center">
+                        <p class="text-gray-300 text-sm">{{ $card['label'] }}</p>
+                        <p class="text-3xl font-bold text-white mt-2">{{ $card['count'] }}</p>
+                        <p class="text-xs text-gray-300 mt-1">catatan</p>
+                    </div>
+                @endforeach
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-200">
+                    <h3 class="text-xl font-bold text-slate-800">Detail Kehadiran</h3>
                 </div>
 
-                <!-- Ringkasan Kehadiran -->
-                <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Ringkasan Kehadiran</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg text-center">
-                            <p class="text-2xl font-bold text-green-700 dark:text-green-300">
-                                {{ $attendances->where('status', 'hadir')->count() }}
-                            </p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Hadir</p>
-                        </div>
-                        <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg text-center">
-                            <p class="text-2xl font-bold text-yellow-700 dark:text-yellow-300">
-                                {{ $attendances->where('status', 'izin')->count() }}
-                            </p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Izin</p>
-                        </div>
-                        <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg text-center">
-                            <p class="text-2xl font-bold text-orange-700 dark:text-orange-300">
-                                {{ $attendances->where('status', 'sakit')->count() }}
-                            </p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Sakit</p>
-                        </div>
-                        <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg text-center">
-                            <p class="text-2xl font-bold text-red-700 dark:text-red-300">
-                                {{ $attendances->where('status', 'alpa')->count() }}
-                            </p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Alpa</p>
-                        </div>
+                @if($attendances->count() > 0)
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead class="bg-slate-50 border-b border-slate-200">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-slate-700 font-semibold">No</th>
+                                    <th class="px-4 py-3 text-left text-slate-700 font-semibold">Tanggal Meet</th>
+                                    <th class="px-4 py-3 text-left text-slate-700 font-semibold">Topik / Judul Pertemuan</th>
+                                    <th class="px-4 py-3 text-left text-slate-700 font-semibold">Kelas</th>
+                                    <th class="px-4 py-3 text-left text-slate-700 font-semibold">Tipe Pertemuan</th>
+                                    <th class="px-4 py-3 text-left text-slate-700 font-semibold">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @foreach ($attendances as $index => $attendance)
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="px-4 py-3 text-slate-700">{{ $index + 1 }}</td>
+                                        <td class="px-4 py-3 text-slate-700">
+                                            {{ \Carbon\Carbon::parse($attendance->meeting->meeting_date)->format('d M Y') }}
+                                        </td>
+                                        <td class="px-4 py-3 text-slate-800 font-medium">
+                                            {{ $attendance->meeting->title }}
+                                        </td>
+                                        <td class="px-4 py-3 text-slate-700">
+                                            {{ $attendance->meeting->class->name ?? 'N/A' }}
+                                        </td>
+                                        <td class="px-4 py-3 text-slate-700 capitalize">
+                                            {{ $attendance->meeting->type ?? 'online' }}
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            @php
+                                                $statusColors = [
+                                                    'hadir' => 'bg-emerald-100 text-emerald-700',
+                                                    'izin' => 'bg-amber-100 text-amber-700',
+                                                    'sakit' => 'bg-rose-100 text-rose-700',
+                                                    'alpa' => 'bg-slate-100 text-slate-700',
+                                                ];
+                                                $statusLabels = [
+                                                    'hadir' => 'Hadir',
+                                                    'izin' => 'Izin',
+                                                    'sakit' => 'Sakit',
+                                                    'alpa' => 'Alpha',
+                                                ];
+                                            @endphp
+                                            <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold {{ $statusColors[$attendance->status] ?? 'bg-slate-100 text-slate-700' }}">
+                                                {{ $statusLabels[$attendance->status] ?? $attendance->status }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-            @else
-                <div class="text-center py-12">
-                    <p class="text-gray-600 dark:text-gray-400 mb-4">
-                        Belum ada data kehadiran untuk Anda
-                    </p>
-                </div>
-            @endif
+                @else
+                    <div class="p-8 text-center text-slate-500">
+                        Belum ada data kehadiran untuk Anda.
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
-</div>
-
-</body>
-</html>
+</x-member-layout>

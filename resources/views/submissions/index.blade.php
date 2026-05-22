@@ -63,7 +63,7 @@
                                     @endphp
                                     <div class="flex items-center justify-between">
                                         <span class="text-gray-600 dark:text-gray-400">⏱️ Sisa Waktu:</span>
-                                        <span class="font-semibold @if ($isOverdue) text-red-600 @else text-green-600 @endif">
+                                        <span class="font-semibold {{ $isOverdue ? 'text-red-600' : 'text-green-600' }}">
                                             @if ($isOverdue)
                                                 ⚠️ Terlambat {{ $daysLeft }} hari
                                             @else

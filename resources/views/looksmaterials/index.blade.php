@@ -14,9 +14,9 @@
                             <div class="p-6">
                                 <!-- Material Header -->
                                 <div class="mb-4">
-                                    <div class="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 text-xs font-semibold rounded-full mb-2">
+                                    {{-- <div class="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 text-xs font-semibold rounded-full mb-2">
                                         {{ $material->class->description ?? 'Kelas' }}
-                                    </div>
+                                    </div> --}}
                                     <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 line-clamp-2">
                                         {{ $material->title }}
                                     </h3>

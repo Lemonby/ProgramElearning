@@ -15,12 +15,13 @@ class Meeting extends Model
         'title',
         'meeting_date',
         'meeting_time',
+        'type',
         'meeting_link',
         'description',
     ];
 
-    protected $dates = [
-        'meeting_date',
+    protected $casts = [
+        'meeting_date' => 'date',
     ];
 
     // Relationship ke Mentor (User yang mengajar)

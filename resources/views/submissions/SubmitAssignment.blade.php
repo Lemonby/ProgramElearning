@@ -58,7 +58,7 @@
                                         $isOverdue = $now > $deadline;
                                         $daysLeft = $now->diffInDays($deadline);
                                     @endphp
-                                    <span class="@if ($isOverdue) text-red-400 @else text-green-400 @endif font-semibold">
+                                    <span class="font-semibold {{ $isOverdue ? 'text-red-400' : 'text-green-400' }}">
                                         @if ($isOverdue)
                                             ⚠️ Terlambat {{ $daysLeft }} hari
                                         @else
@@ -120,7 +120,7 @@
     </div>
 
     <!-- Modal Submission -->
-    <div id="submissionModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div id="submissionModal" class="hidden fixed inset-0 bg-black/50 items-center justify-center z-50 p-4" style="display: none;">
         <div class="bg-slate-800 rounded-xl shadow-2xl border border-slate-700 max-w-md w-full max-h-[90vh] overflow-y-auto">
             <!-- Modal Header -->
             <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-6 sticky top-0 flex justify-between items-center">
@@ -218,11 +218,13 @@
             document.getElementById('judulTugas').value = title;
             document.getElementById('modalAssignmentTitle').textContent = title;
             document.getElementById('submissionModal').classList.remove('hidden');
+            document.getElementById('submissionModal').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
 
         function closeSubmissionModal() {
             document.getElementById('submissionModal').classList.add('hidden');
+            document.getElementById('submissionModal').style.display = 'none';
             document.body.style.overflow = 'auto';
             document.getElementById('submissionForm').reset();
         }

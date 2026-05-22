@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSubmissionRequest;
 use App\Http\Requests\UpdateSubmissionRequest;
 use App\Models\Assignments;
+use App\Models\Classes;
 use App\Models\PengumpulanTugas;
 use App\Services\SubmissionService;
 use Illuminate\Support\Facades\Auth;
@@ -25,17 +26,19 @@ class SubmissionController extends Controller
     public function index()
     {
         $userId = Auth::id();
+        $member = Auth::user();
         
-        // Get all assignments with submission status
         $assignments = Assignments::with(['class', 'submissions' => function ($query) use ($userId) {
             $query->where('member_id', $userId);
         }])
-        ->get()
-        ->map(function ($assignment) use ($userId) {
-            $assignment->isSubmitted = $assignment->submissions->isNotEmpty();
-            $assignment->submission = $assignment->submissions->first();
-            return $assignment;
-        });
+            ->where('class_id', $member->class_id)
+            ->latest()
+            ->get()
+            ->map(function ($assignment) {
+                $assignment->isSubmitted = $assignment->submissions->isNotEmpty();
+                $assignment->submission = $assignment->submissions->first();
+                return $assignment;
+            });
 
         return view('submissions.index', compact('assignments'));
     }
@@ -45,11 +48,12 @@ class SubmissionController extends Controller
      */
     public function create($assignmentId)
     {
-        $assignment = Assignments::findOrFail($assignmentId);
+        $assignment = $this->getClassAssignmentOrFail($assignmentId);
         $userId = Auth::id();
 
         // Check if already submitted
-        $existingSubmission = PengumpulanTugas::where('assignment_id', $assignmentId)
+        $existingSubmission = PengumpulanTugas::query()
+            ->where('assignment_id', $assignmentId)
             ->where('member_id', $userId)
             ->first();
 
@@ -67,8 +71,10 @@ class SubmissionController extends Controller
     public function store(StoreSubmissionRequest $request)
     {
         try {
+            $assignment = $this->getClassAssignmentOrFail($request->validated('assignment_id'));
+
             $submission = $this->submissionService->createSubmission(
-                assignmentId: $request->validated('assignment_id'),
+                assignmentId: $assignment->id,
                 memberId: Auth::id(),
                 fileTugas: $request->file('file_submission'),
                 linkTugas: $request->validated('link_submission'),
@@ -91,10 +97,8 @@ class SubmissionController extends Controller
     {
         $submission = PengumpulanTugas::findOrFail($submissionId);
         
-        // Check authorization
-        if ($submission->member_id !== Auth::id()) {
-            abort(403, 'Anda tidak memiliki akses untuk melihat submission ini.');
-        }
+        $this->ensureSubmissionBelongsToMemberClass($submission);
+        $this->ensureSubmissionOwnedByMember($submission);
 
         $submission->load('assignment', 'member');
 
@@ -108,10 +112,8 @@ class SubmissionController extends Controller
     {
         $submission = PengumpulanTugas::findOrFail($submissionId);
 
-        // Check authorization
-        if ($submission->member_id !== Auth::id()) {
-            abort(403, 'Anda tidak memiliki akses untuk edit submission ini.');
-        }
+        $this->ensureSubmissionBelongsToMemberClass($submission);
+        $this->ensureSubmissionOwnedByMember($submission);
 
         // Check if assignment deadline has passed
         if ($submission->assignment->deadline < now()) {
@@ -132,10 +134,8 @@ class SubmissionController extends Controller
         try {
             $submission = PengumpulanTugas::findOrFail($submissionId);
 
-            // Check authorization
-            if ($submission->member_id !== Auth::id()) {
-                abort(403, 'Anda tidak memiliki akses untuk update submission ini.');
-            }
+            $this->ensureSubmissionBelongsToMemberClass($submission);
+            $this->ensureSubmissionOwnedByMember($submission);
 
             // Check if deadline has passed
             if ($submission->assignment->deadline < now()) {
@@ -167,10 +167,8 @@ class SubmissionController extends Controller
         try {
             $submission = PengumpulanTugas::findOrFail($submissionId);
 
-            // Check authorization
-            if ($submission->member_id !== Auth::id()) {
-                abort(403, 'Anda tidak memiliki akses untuk delete submission ini.');
-            }
+            $this->ensureSubmissionBelongsToMemberClass($submission);
+            $this->ensureSubmissionOwnedByMember($submission);
 
             // Check if deadline has passed
             if ($submission->assignment->deadline < now()) {
@@ -197,10 +195,8 @@ class SubmissionController extends Controller
         try {
             $submission = PengumpulanTugas::findOrFail($submissionId);
 
-            // Check authorization
-            if ($submission->member_id !== Auth::id()) {
-                abort(403, 'Anda tidak memiliki akses untuk download file ini.');
-            }
+            $this->ensureSubmissionBelongsToMemberClass($submission);
+            $this->ensureSubmissionOwnedByMember($submission);
 
             // Check if it's an uploaded file
             if (!$submission->is_upload) {
@@ -218,5 +214,37 @@ class SubmissionController extends Controller
             return redirect()->back()
                 ->with('error', 'Gagal mendownload file: ' . $e->getMessage());
         }
+    }
+
+    private function getMemberClassId(): ?int
+    {
+        $member = Auth::user();
+
+        return $member?->class_id ? (int) $member->class_id : null;
+    }
+
+    private function getClassAssignmentOrFail(int $assignmentId): Assignments
+    {
+        $classId = $this->getMemberClassId();
+
+        abort_unless($classId, 403, 'Kelas member belum diset.');
+
+        return Assignments::query()
+            ->whereKey($assignmentId)
+            ->where('class_id', $classId)
+            ->firstOrFail();
+    }
+
+    private function ensureSubmissionBelongsToMemberClass(PengumpulanTugas $submission): void
+    {
+        $classId = $this->getMemberClassId();
+
+        abort_unless($classId, 403, 'Kelas member belum diset.');
+        abort_unless((int) $submission->assignment->class_id === $classId, 403, 'Submission ini bukan milik kelas Anda.');
+    }
+
+    private function ensureSubmissionOwnedByMember(PengumpulanTugas $submission): void
+    {
+        abort_unless((int) $submission->member_id === (int) Auth::id(), 403, 'Anda tidak memiliki akses untuk data submission ini.');
     }
 }
