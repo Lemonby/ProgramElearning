@@ -21,7 +21,7 @@ class StoreSubmissionRequest extends FormRequest
     {
         return [
             'assignment_id' => 'required|integer|exists:assignments,id',
-            'file_submission' => 'nullable|required_without:link_submission|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar|max:10240',
+            'file_submission' => 'nullable|required_without:link_submission|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar|max:25600',
             'link_submission' => 'nullable|required_without:file_submission|url',
         ];
     }
@@ -38,7 +38,7 @@ class StoreSubmissionRequest extends FormRequest
             'file_submission.required_without' => 'File atau link tugas harus diisi salah satu.',
             'file_submission.file' => 'File harus berupa file yang valid.',
             'file_submission.mimes' => 'File hanya boleh berupa: pdf, doc, docx, ppt, pptx, xls, xlsx, zip, rar.',
-            'file_submission.max' => 'Ukuran file tidak boleh lebih dari 10 MB.',
+            'file_submission.max' => 'Ukuran file tidak boleh lebih dari 25 MB.',
             'link_submission.required_without' => 'File atau link tugas harus diisi salah satu.',
             'link_submission.url' => 'Link harus berupa URL yang valid.',
         ];

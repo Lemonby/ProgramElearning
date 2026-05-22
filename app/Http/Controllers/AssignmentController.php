@@ -89,7 +89,7 @@ class AssignmentController extends Controller
     {
         $this->ensureMentorOwnsAssignment($assignment);
 
-        $assignment->load('class');
+        $assignment->load(['class.members', 'submissions.member']);
         
         return view('assignment.show', compact('assignment'));
     }
@@ -196,5 +196,27 @@ class AssignmentController extends Controller
 
         abort_unless($classId, 403, 'Kelas mentor belum diset.');
         abort_unless((int) $assignment->class_id === $classId, 403, 'Assignment ini bukan milik kelas Anda.');
+    }
+
+    /**
+     * Mark a student submission as graded.
+     * 
+     * @param int $submissionId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function gradeSubmission($submissionId)
+    {
+        $submission = \App\Models\PengumpulanTugas::findOrFail($submissionId);
+        
+        // Ensure mentor owns this assignment/submission
+        $classId = $this->getMentorClassId();
+        abort_unless($classId, 403, 'Kelas mentor belum diset.');
+        abort_unless((int) $submission->assignment->class_id === $classId, 403, 'Submission ini bukan milik kelas Anda.');
+
+        $submission->update([
+            'graded_at' => now()
+        ]);
+
+        return redirect()->back()->with('success', 'Tugas berhasil ditandai selesai dinilai!');
     }
 }

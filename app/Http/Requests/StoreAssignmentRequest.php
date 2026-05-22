@@ -26,7 +26,7 @@ class StoreAssignmentRequest extends FormRequest
             'deadline' => 'required|date|after_or_equal:today',
             
             // File atau Link Materi
-            'file_assignment' => 'nullable|required_without:link_assignment|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar|max:102400',
+            'file_assignment' => 'nullable|required_without:link_assignment|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar|max:25600',
             'link_assignment' => 'nullable|required_without:file_assignment|url',
         ];
     }
@@ -52,7 +52,7 @@ class StoreAssignmentRequest extends FormRequest
             'file_assignment.required_without' => 'File atau link assignment harus diisi minimal salah satu.',
             'file_assignment.file' => 'File assignment harus berupa file yang valid.',
             'file_assignment.mimes' => 'File assignment hanya boleh format: pdf, doc, docx, ppt, pptx, xls, xlsx, zip, rar.',
-            'file_assignment.max' => 'File assignment tidak boleh lebih dari 100MB.',
+            'file_assignment.max' => 'File assignment tidak boleh lebih dari 25MB.',
             
             'link_assignment.required_without' => 'File atau link assignment harus diisi minimal salah satu.',
             'link_assignment.url' => 'Link assignment harus berupa URL yang valid.',

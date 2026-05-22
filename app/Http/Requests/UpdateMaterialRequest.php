@@ -23,7 +23,7 @@ class UpdateMaterialRequest extends FormRequest
             'class_id' => 'required|integer|exists:classes,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:2000',
-            'file' => 'nullable|file|mimes:pdf,ppt,pptx,doc,docx|max:20480',
+            'file' => 'nullable|file|mimes:pdf,ppt,pptx,doc,docx,xls,xlsx,zip,rar|max:25600',
         ];
     }
 
@@ -44,8 +44,8 @@ class UpdateMaterialRequest extends FormRequest
             'description.max' => 'Deskripsi materi tidak boleh lebih dari 2000 karakter.',
             
             'file.file' => 'File materi harus berupa file yang valid.',
-            'file.mimes' => 'File materi harus berformat: PDF, PPT, PPTX, DOC, atau DOCX.',
-            'file.max' => 'File materi tidak boleh lebih dari 20 MB.',
+            'file.mimes' => 'File materi harus berformat: PDF, PPT, PPTX, DOC, DOCX, XLS, XLSX, ZIP, atau RAR.',
+            'file.max' => 'File materi tidak boleh lebih dari 25 MB.',
         ];
     }
 }

@@ -15,10 +15,10 @@ class MemberMaterialController extends Controller
     {
         $user = Auth::user();
         
-        // Get materials for the member's class
-        $materials = Material::where('class_id', $user->class_id)
-                            ->latest()
-                            ->get();
+        // Get materials for the member's class via Class Eloquent Relationship
+        $materials = $user->class
+            ? $user->class->materials()->latest()->get()
+            : collect();
 
         return view('looksmaterials.index', compact('materials', 'user'));
     }

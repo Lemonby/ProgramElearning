@@ -27,7 +27,7 @@ class StorePengumpulanTugasRequest extends FormRequest
             'namaSiswa' => 'required|string|max:255',
             
             // File atau Link
-            'fileTugas' => 'nullable|required_without:linkTugas|file|mimes:pdf,doc,docx,zip,rar|max:5120',
+            'fileTugas' => 'nullable|required_without:linkTugas|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar|max:25600',
             'linkTugas' => 'nullable|required_without:fileTugas|url',
         ];
     }
@@ -55,8 +55,8 @@ class StorePengumpulanTugasRequest extends FormRequest
             // File atau Link
             'fileTugas.required_without' => 'File atau link harus diisi salah satu.',
             'fileTugas.file' => 'Yang diunggah harus berupa file.',
-            'fileTugas.mimes' => 'Format file harus PDF, DOC, DOCX, ZIP, atau RAR.',
-            'fileTugas.max' => 'Ukuran file tidak boleh lebih dari 5MB.',
+            'fileTugas.mimes' => 'Format file harus PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, ZIP, atau RAR.',
+            'fileTugas.max' => 'Ukuran file tidak boleh lebih dari 25MB.',
             'linkTugas.required_without' => 'File atau link harus diisi salah satu.',
             'linkTugas.url' => 'Link tugas harus berupa URL yang valid.',
         ];

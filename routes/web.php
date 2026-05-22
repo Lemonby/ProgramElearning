@@ -10,6 +10,8 @@ use App\Http\Controllers\PengumpulanTugasController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\MemberDashboardController;
+use App\Http\Controllers\LooksAttendenceController;
+use App\Http\Controllers\MentorDashboardController;
 
 
 Route::resource('materials', MaterialController::class)->middleware(['auth', 'verified', 'is_mentor']);
@@ -24,6 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // Member Attendance - View own attendance history
 Route::middleware(['auth', 'verified', 'is_member'])->group(function () {
     Route::get('/my-attendance', [AttendanceController::class, 'myAttendance'])->name('attendances.myAttendance');
+    Route::get('/riwayat-kehadiran', [LooksAttendenceController::class, 'index'])->name('member.attendance.history');
 });
 
 Route::get('/', function () {
@@ -40,9 +43,9 @@ Route::get('/dashboard/member', [MemberDashboardController::class, 'index'])
     ->middleware(['auth', 'verified', 'is_member'])
     ->name('dashboard.member');
 
-Route::get('/dashboard/mentor', function () {
-    return view('dashboard.mentor');
-})->middleware(['auth', 'verified'])->name('dashboard.mentor');
+Route::get('/dashboard/mentor', [MentorDashboardController::class, 'index'])
+    ->middleware(['auth', 'verified', 'is_mentor'])
+    ->name('dashboard.mentor');
 
 Route::middleware('auth')->group(function () { 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -61,6 +64,8 @@ Route::post('/pengumpulan-tugas', [PengumpulanTugasController::class, 'kirimEmai
 // Assignment Routes (Mentor)
 Route::middleware(['auth', 'verified', 'is_mentor'])->group(function () {
     Route::resource('assignment', AssignmentController::class);
+    Route::post('/submissions/{submissionId}/grade', [AssignmentController::class, 'gradeSubmission'])
+        ->name('assignment.gradeSubmission');
 });
 
 // Submission Routes (Member)

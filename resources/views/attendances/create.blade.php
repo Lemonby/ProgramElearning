@@ -1,84 +1,129 @@
 <x-mentor-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Buat Absensi') }}
-        </h2>
-    </x-slot>
+    <div class="max-w-4xl mx-auto space-y-8">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between pb-4 border-b border-white/5">
+            <div>
+                <h1 class="text-3xl font-extrabold text-white tracking-tight">Buat Lembar Presensi</h1>
+                <p class="text-slate-400 mt-1 text-sm">Catat atau perbarui kehadiran siswa untuk pertemuan tertentu.</p>
+            </div>
+            <a href="{{ route('attendances.index') }}" class="text-purple-300 hover:text-white flex items-center gap-1.5 text-xs font-bold transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                Kembali ke Daftar
+            </a>
+        </div>
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                
-                @if ($errors->any())
-                    <div class="mb-4 px-4 py-3 bg-red-100 border border-red-400 text-red-700 rounded dark:bg-red-900 dark:border-red-700 dark:text-red-100">
-                        <strong>{{ __('Error:') }}</strong>
-                        <ul class="list-disc list-inside mt-2">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+        <!-- Validation Errors -->
+        @if ($errors->any())
+            <div class="bg-rose-500/10 border border-rose-500/30 text-rose-200 p-5 rounded-2xl text-sm shadow-xl">
+                <div class="flex items-center gap-2.5 mb-2 font-bold">
+                    <svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <span>Terjadi kesalahan input:</span>
+                </div>
+                <ul class="list-disc list-inside space-y-1 text-xs text-rose-300/90 pl-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-                <form action="{{ route('attendances.store') }}" method="POST" id="attendanceForm" class="space-y-6">
-                    @csrf
+        <!-- Form Card Container -->
+        <div class="bg-[#1f193f]/40 border border-white/5 rounded-[28px] p-6 sm:p-8 shadow-xl relative overflow-hidden">
+            <!-- Glow effect -->
+            <div class="absolute top-0 right-0 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl"></div>
+            
+            <form action="{{ route('attendances.store') }}" method="POST" id="attendanceForm" class="space-y-8 relative z-10">
+                @csrf
 
-                    <!-- Pilih Meeting -->
-                    <div>
-                        <label for="meeting_id" class="block font-medium text-sm text-gray-700 dark:text-gray-300">
-                            {{ __('Pilih Pertemuan') }} <span class="text-red-600">*</span>
-                        </label>
+                <!-- Pilih Meeting Section -->
+                <div class="space-y-2">
+                    <label for="meeting_id" class="block text-xs font-black text-white uppercase tracking-wider">
+                        Pilih Pertemuan Kelas <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
                         <select id="meeting_id" 
                                 name="meeting_id" 
-                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                class="w-full bg-[#1A1435]/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-sm appearance-none cursor-pointer"
                                 required
                                 onchange="loadMembers(this.value)">
-                            <option value="">-- {{ __('Pilih Pertemuan') }} --</option>
+                            <option value="" class="bg-[#1A1435] text-slate-400">-- Pilih Pertemuan untuk Memulai Absensi --</option>
                             @foreach($meetings as $meeting)
-                                <option value="{{ $meeting->id }}">
-                                    {{ $meeting->title }}
+                                <option value="{{ $meeting->id }}" class="bg-[#1A1435] text-white">
+                                    {{ $meeting->title }} ({{ $meeting->class->description ?? 'N/A' }})
                                 </option>
                             @endforeach
                         </select>
-                    </div>
-
-                    <!-- Loading Indicator -->
-                    <div id="loadingIndicator" class="hidden text-center py-4">
-                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                        <p class="text-gray-600 dark:text-gray-400 mt-2">{{ __('Memuat data member...') }}</p>
-                    </div>
-
-                    <!-- Members Attendance Form -->
-                    <div id="membersContainer" class="hidden">
-                        <div class="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                {{ __('Daftar Member') }}
-                            </h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                {{ __('Pilih status kehadiran untuk setiap member') }}
-                            </p>
-                        </div>
-
-                        <div id="attendanceItems" class="space-y-4">
-                            <!-- Akan diisi oleh AJAX -->
-                        </div>
-
-                        <!-- Buttons -->
-                        <div class="flex gap-3 justify-end mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-                            <a href="{{ route('attendances.index') }}">
-                                <x-secondary-button>
-                                    {{ __('Batal') }}
-                                </x-secondary-button>
-                            </a>
-                            <x-primary-button>
-                                {{ __('Simpan Absensi') }}
-                            </x-primary-button>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-purple-300">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                            </svg>
                         </div>
                     </div>
-                </form>
-            </div>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div id="loadingIndicator" class="hidden text-center py-12 space-y-4">
+                    <div class="inline-block animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-purple-500"></div>
+                    <p class="text-purple-300 font-medium text-xs tracking-wide">{{ __('Menghubungkan & Memuat data member kelas...') }}</p>
+                </div>
+
+                <!-- Members Attendance Form Container (Initially Hidden) -->
+                <div id="membersContainer" class="hidden space-y-6">
+                    <div class="pb-4 border-b border-white/5">
+                        <h3 class="text-lg font-bold text-white">
+                            {{ __('Daftar Member & Status Kehadiran') }}
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">
+                            {{ __('Silakan tandai status absensi untuk masing-masing siswa di bawah ini.') }}
+                        </p>
+                    </div>
+
+                    <!-- Attendance Items dynamic list -->
+                    <div id="attendanceItems" class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                        <!-- Akan diisi secara dinamis oleh AJAX -->
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-white/5">
+                        <button type="submit" 
+                                class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-purple-500/20 text-xs uppercase tracking-wider flex items-center justify-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Simpan Absensi Kelas
+                        </button>
+                        <a href="{{ route('attendances.index') }}"
+                           class="flex-1 text-center bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white font-bold py-3 px-6 rounded-xl transition-all text-xs uppercase tracking-wider flex items-center justify-center">
+                            Batal & Kembali
+                        </a>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
+
+    <!-- Custom Scrollbar styling for list -->
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(147, 51, 234, 0.3);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(147, 51, 234, 0.5);
+        }
+    </style>
 
     <script>
         function loadMembers(meetingId) {
@@ -98,9 +143,9 @@
                 .then(response => {
                     if (!response.ok) {
                         if (response.status === 403) {
-                            throw new Error('Anda tidak memiliki akses ke meeting ini');
+                            throw new Error('Anda tidak memiliki akses ke pertemuan ini');
                         }
-                        throw new Error('Gagal memuat data');
+                        throw new Error('Gagal memuat data member kelas');
                     }
                     return response.json();
                 })
@@ -110,33 +155,80 @@
                     const existing = data.existingAttendances;
 
                     if (members.length === 0) {
-                        itemsContainer.innerHTML = '<p class="text-center text-gray-500 dark:text-gray-400 py-4">Tidak ada member di kelas ini</p>';
+                        itemsContainer.innerHTML = `
+                            <div class="text-center py-8 bg-white/5 border border-white/5 rounded-2xl p-6">
+                                <p class="text-slate-400 text-sm">Tidak ada member/siswa terdaftar di kelas untuk pertemuan ini.</p>
+                            </div>
+                        `;
                     } else {
                         members.forEach((member, index) => {
                             const currentStatus = existing[member.id] || 'hadir';
                             const memberHtml = `
-                                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <label class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                                            ${index + 1}. ${member.name}
-                                        </label>
+                                <div class="bg-[#1f193f]/30 border border-white/5 hover:border-purple-500/20 rounded-2xl p-4 sm:p-5 transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    
+                                    <!-- Left Info -->
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-8 h-8 rounded-full bg-purple-600/10 border border-purple-500/20 text-purple-300 flex items-center justify-center text-xs font-black flex-shrink-0">
+                                            ${index + 1}
+                                        </span>
+                                        <div>
+                                            <h4 class="font-bold text-white text-sm tracking-wide">${member.name}</h4>
+                                            <p class="text-slate-400 text-[10px] tracking-wider uppercase font-bold mt-0.5">Siswa</p>
+                                        </div>
                                     </div>
-                                    <div class="flex gap-4">
-                                        <label class="flex items-center">
-                                            <input type="radio" name="attendances[${index}][status]" value="hadir" ${currentStatus === 'hadir' ? 'checked' : ''} class="w-4 h-4 text-green-600" required>
-                                            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Hadir</span>
+
+                                    <!-- Right Options (Custom radio cards) -->
+                                    <div class="flex flex-wrap gap-2">
+                                        <!-- Hadir Option -->
+                                        <label class="relative flex items-center justify-center cursor-pointer select-none">
+                                            <input type="radio" 
+                                                   name="attendances[${index}][status]" 
+                                                   value="hadir" 
+                                                   ${currentStatus === 'hadir' ? 'checked' : ''} 
+                                                   class="sr-only peer" 
+                                                   required>
+                                            <span class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider border border-white/10 bg-[#1A1435]/60 text-slate-400 transition-all peer-checked:bg-emerald-500/20 peer-checked:text-emerald-300 peer-checked:border-emerald-500/30 hover:bg-white/5 hover:text-white">
+                                                Hadir
+                                            </span>
                                         </label>
-                                        <label class="flex items-center">
-                                            <input type="radio" name="attendances[${index}][status]" value="izin" ${currentStatus === 'izin' ? 'checked' : ''} class="w-4 h-4 text-yellow-600" required>
-                                            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Izin</span>
+
+                                        <!-- Izin Option -->
+                                        <label class="relative flex items-center justify-center cursor-pointer select-none">
+                                            <input type="radio" 
+                                                   name="attendances[${index}][status]" 
+                                                   value="izin" 
+                                                   ${currentStatus === 'izin' ? 'checked' : ''} 
+                                                   class="sr-only peer" 
+                                                   required>
+                                            <span class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider border border-white/10 bg-[#1A1435]/60 text-slate-400 transition-all peer-checked:bg-amber-500/20 peer-checked:text-amber-300 peer-checked:border-amber-500/30 hover:bg-white/5 hover:text-white">
+                                                Izin
+                                            </span>
                                         </label>
-                                        <label class="flex items-center">
-                                            <input type="radio" name="attendances[${index}][status]" value="sakit" ${currentStatus === 'sakit' ? 'checked' : ''} class="w-4 h-4 text-orange-600" required>
-                                            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Sakit</span>
+
+                                        <!-- Sakit Option -->
+                                        <label class="relative flex items-center justify-center cursor-pointer select-none">
+                                            <input type="radio" 
+                                                   name="attendances[${index}][status]" 
+                                                   value="sakit" 
+                                                   ${currentStatus === 'sakit' ? 'checked' : ''} 
+                                                   class="sr-only peer" 
+                                                   required>
+                                            <span class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider border border-white/10 bg-[#1A1435]/60 text-slate-400 transition-all peer-checked:bg-cyan-500/20 peer-checked:text-cyan-300 peer-checked:border-cyan-500/30 hover:bg-white/5 hover:text-white">
+                                                Sakit
+                                            </span>
                                         </label>
-                                        <label class="flex items-center">
-                                            <input type="radio" name="attendances[${index}][status]" value="alpa" ${currentStatus === 'alpa' ? 'checked' : ''} class="w-4 h-4 text-red-600" required>
-                                            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Alpa</span>
+
+                                        <!-- Alpa Option -->
+                                        <label class="relative flex items-center justify-center cursor-pointer select-none">
+                                            <input type="radio" 
+                                                   name="attendances[${index}][status]" 
+                                                   value="alpa" 
+                                                   ${currentStatus === 'alpa' ? 'checked' : ''} 
+                                                   class="sr-only peer" 
+                                                   required>
+                                            <span class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider border border-white/10 bg-[#1A1435]/60 text-slate-400 transition-all peer-checked:bg-rose-500/20 peer-checked:text-rose-300 peer-checked:border-rose-500/30 hover:bg-white/5 hover:text-white">
+                                                Alpa
+                                            </span>
                                         </label>
                                     </div>
                                     <input type="hidden" name="attendances[${index}][member_id]" value="${member.id}">
@@ -151,7 +243,14 @@
                 })
                 .catch(error => {
                     loading.classList.add('hidden');
-                    itemsContainer.innerHTML = `<p class="text-red-600 dark:text-red-400 text-center py-4">Error: ${error.message}</p>`;
+                    itemsContainer.innerHTML = `
+                        <div class="bg-rose-500/10 border border-rose-500/30 text-rose-200 p-4 rounded-2xl text-xs font-semibold shadow-xl flex items-center gap-2.5 justify-center">
+                            <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <span>${error.message}</span>
+                        </div>
+                    `;
                     container.classList.remove('hidden');
                     console.error('Error loading members:', error);
                 });
@@ -171,7 +270,7 @@
 
             if (allInputs.length === 0) {
                 e.preventDefault();
-                alert('Silakan pilih pertemuan dan isi absensi member');
+                alert('Silakan pilih pertemuan yang memiliki siswa terlebih dahulu');
                 return false;
             }
 
@@ -195,7 +294,7 @@
 
             if (!allStatusSelected) {
                 e.preventDefault();
-                alert('Silakan pilih status kehadiran untuk semua member');
+                alert('Silakan pilih status kehadiran untuk semua siswa');
                 return false;
             }
         });

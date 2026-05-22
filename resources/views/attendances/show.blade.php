@@ -1,131 +1,184 @@
 <x-mentor-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Detail Absensi - ') }} {{ $meeting->title }}
-        </h2>
-    </x-slot>
+    <div class="space-y-8">
+        
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-white/5">
+            <div>
+                <h1 class="text-3xl font-extrabold text-white tracking-tight">Detail Presensi Kelas</h1>
+                <p class="text-slate-400 mt-1 text-sm">Lihat ringkasan dan status kehadiran siswa untuk pertemuan ini.</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('attendances.edit', $meeting->id) }}" 
+                   class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-5 rounded-xl transition-all shadow-lg shadow-purple-500/20 text-xs uppercase tracking-wider">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                    Edit Absensi
+                </a>
+                <a href="{{ route('attendances.index') }}" 
+                   class="inline-flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white font-bold py-2.5 px-5 rounded-xl transition-all text-xs uppercase tracking-wider">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Kembali
+                </a>
+            </div>
+        </div>
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                
-                <!-- Meeting Info -->
-                <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left: Meeting Info (Span 1) -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-[#1f193f]/40 border border-white/5 rounded-[28px] p-6 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-3xl"></div>
+                    
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-white/5 pb-3">
+                        <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
                         Informasi Pertemuan
                     </h3>
-                    <div class="grid grid-cols-2 gap-4 text-sm">
+                    
+                    <div class="space-y-4">
                         <div>
-                            <p class="text-gray-600 dark:text-gray-400">Judul</p>
-                            <p class="font-semibold text-gray-900 dark:text-gray-100">{{ $meeting->title }}</p>
+                            <span class="text-slate-400 text-[10px] font-black uppercase tracking-wider">Judul Pertemuan</span>
+                            <p class="font-extrabold text-white text-base mt-0.5 leading-snug">{{ $meeting->title }}</p>
                         </div>
                         <div>
-                            <p class="text-gray-600 dark:text-gray-400">Kelas</p>
-                            <p class="font-semibold text-gray-900 dark:text-gray-100">{{ $meeting->class->description ?? 'N/A' }}</p>
+                            <span class="text-slate-400 text-[10px] font-black uppercase tracking-wider">Kelas</span>
+                            <p class="font-bold text-purple-300 text-sm mt-0.5">{{ $meeting->class->description ?? 'N/A' }}</p>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[10px] font-black uppercase tracking-wider">Jadwal Sesi</span>
+                            <p class="text-slate-300 text-xs mt-0.5 flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                {{ $meeting->meeting_date }} &bull; {{ $meeting->meeting_time }} WIB
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Attendance Summary -->
-                <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                <!-- Summary Breakdown Stats Widget -->
+                <div class="bg-[#1f193f]/40 border border-white/5 rounded-[28px] p-6 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-3xl"></div>
+                    
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-white/5 pb-3">
+                        <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
                         Ringkasan Kehadiran
                     </h3>
-                    <div class="grid grid-cols-4 gap-3">
-                        <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg text-center">
-                            <p class="text-2xl font-bold text-green-700 dark:text-green-300">
-                                {{ $meeting->getPresentCount() }}
-                            </p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Hadir</p>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl text-center">
+                            <span class="block text-2xl font-black text-emerald-400 leading-none mb-1">{{ $meeting->getPresentCount() }}</span>
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Hadir</span>
                         </div>
-                        <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg text-center">
-                            <p class="text-2xl font-bold text-yellow-700 dark:text-yellow-300">
-                                {{ $meeting->getExcusedCount() }}
-                            </p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Izin</p>
+                        <div class="bg-amber-500/10 border border-amber-500/20 p-4 rounded-2xl text-center">
+                            <span class="block text-2xl font-black text-amber-400 leading-none mb-1">{{ $meeting->getExcusedCount() }}</span>
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Izin</span>
                         </div>
-                        <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg text-center">
-                            <p class="text-2xl font-bold text-orange-700 dark:text-orange-300">
-                                {{ $meeting->getSickCount() }}
-                            </p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Sakit</p>
+                        <div class="bg-cyan-500/10 border border-cyan-500/20 p-4 rounded-2xl text-center">
+                            <span class="block text-2xl font-black text-cyan-400 leading-none mb-1">{{ $meeting->getSickCount() }}</span>
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Sakit</span>
                         </div>
-                        <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg text-center">
-                            <p class="text-2xl font-bold text-red-700 dark:text-red-300">
-                                {{ $meeting->getAbsentCount() }}
-                            </p>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Alpa</p>
+                        <div class="bg-rose-500/10 border border-rose-500/20 p-4 rounded-2xl text-center">
+                            <span class="block text-2xl font-black text-rose-400 leading-none mb-1">{{ $meeting->getAbsentCount() }}</span>
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Alpa</span>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Attendance List -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                        Daftar Kehadiran Member
+            <!-- Right: Attendance Roster (Span 2) -->
+            <div class="lg:col-span-2">
+                <div class="bg-[#1f193f]/40 border border-white/5 rounded-[28px] p-6 sm:p-8 shadow-xl relative overflow-hidden h-full flex flex-col">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl"></div>
+                    
+                    <h3 class="text-xl font-bold text-white mb-6 border-b border-white/5 pb-4 relative z-10">
+                        Daftar Kehadiran Siswa
                     </h3>
+
                     @if ($meeting->attendances->count() > 0)
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead class="bg-gray-100 dark:bg-gray-700">
-                                    <tr>
-                                        <th class="px-4 py-3 text-left text-gray-700 dark:text-gray-300 font-semibold">No</th>
-                                        <th class="px-4 py-3 text-left text-gray-700 dark:text-gray-300 font-semibold">Nama Member</th>
-                                        <th class="px-4 py-3 text-left text-gray-700 dark:text-gray-300 font-semibold">Status</th>
-                                        <th class="px-4 py-3 text-left text-gray-700 dark:text-gray-300 font-semibold">Input Oleh</th>
-                                        <th class="px-4 py-3 text-left text-gray-700 dark:text-gray-300 font-semibold">Waktu</th>
+                        <div class="overflow-x-auto relative z-10 flex-1">
+                            <table class="w-full text-sm text-left">
+                                <thead>
+                                    <tr class="border-b border-white/5 text-slate-400 text-xs font-black uppercase tracking-wider">
+                                        <th class="pb-3 pl-2">No</th>
+                                        <th class="pb-3">Nama Siswa</th>
+                                        <th class="pb-3">Status</th>
+                                        <th class="pb-3 hidden sm:table-cell">Dicatat Oleh</th>
+                                        <th class="pb-3 text-right pr-2">Waktu Input</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                <tbody class="divide-y divide-white/5">
                                     @foreach ($meeting->attendances as $index => $attendance)
-                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                            <td class="px-4 py-3 text-gray-900 dark:text-gray-100">{{ $index + 1 }}</td>
-                                            <td class="px-4 py-3 text-gray-900 dark:text-gray-100">{{ $attendance->member->name }}</td>
-                                            <td class="px-4 py-3">
+                                        <tr class="hover:bg-white/5 transition-colors">
+                                            <td class="py-4 pl-2 font-bold text-slate-500">{{ $index + 1 }}</td>
+                                            <td class="py-4 font-bold text-white">
+                                                <div class="flex items-center gap-3">
+                                                    <span class="w-7 h-7 rounded-full bg-purple-600/10 border border-purple-500/20 text-purple-300 flex items-center justify-center text-[10px] font-black">
+                                                        {{ substr($attendance->member->name, 0, 1) }}
+                                                    </span>
+                                                    <span>{{ $attendance->member->name }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-4">
                                                 @php
-                                                    $statusClass = [
-                                                        'hadir' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-                                                        'izin' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-                                                        'sakit' => 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-                                                        'alpa' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+                                                    $statusStyles = [
+                                                        'hadir' => 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+                                                        'izin' => 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+                                                        'sakit' => 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
+                                                        'alpa' => 'bg-rose-500/20 text-rose-300 border-rose-500/30',
                                                     ];
-                                                    $statusLabel = [
+                                                    $statusLabels = [
                                                         'hadir' => 'Hadir',
                                                         'izin' => 'Izin',
                                                         'sakit' => 'Sakit',
                                                         'alpa' => 'Alpa',
                                                     ];
                                                 @endphp
-                                                <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold {{ $statusClass[$attendance->status] ?? '' }}">
-                                                    {{ $statusLabel[$attendance->status] ?? $attendance->status }}
+                                                <span class="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider border {{ $statusStyles[$attendance->status] ?? 'bg-white/5 text-slate-300 border-white/10' }}">
+                                                    {{ $statusLabels[$attendance->status] ?? $attendance->status }}
                                                 </span>
                                             </td>
-                                            <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ $attendance->inputBy->name ?? 'System' }}</td>
-                                            <td class="px-4 py-3 text-gray-600 dark:text-gray-400 text-xs">{{ $attendance->created_at->format('d/m/Y H:i') }}</td>
+                                            <td class="py-4 text-slate-400 text-xs hidden sm:table-cell">
+                                                {{ $attendance->inputBy->name ?? 'System' }}
+                                            </td>
+                                            <td class="py-4 text-slate-400 text-[11px] text-right pr-2">
+                                                {{ $attendance->created_at->format('d/m/Y H:i') }}
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
                     @else
-                        <p class="text-gray-500 dark:text-gray-400 text-center py-4">
-                            Belum ada data kehadiran untuk pertemuan ini
-                        </p>
+                        <div class="text-center py-16 bg-[#1f193f]/20 border border-white/5 rounded-2xl relative z-10 flex-1 flex flex-col items-center justify-center space-y-4">
+                            <div class="w-12 h-12 rounded-full bg-purple-600/10 text-purple-400 flex items-center justify-center border border-purple-500/20">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="space-y-1">
+                                <p class="text-white font-bold text-sm">Belum Ada Kehadiran</p>
+                                <p class="text-slate-400 text-xs max-w-xs leading-relaxed">
+                                    Belum ada data kehadiran siswa yang tercatat untuk pertemuan sesi ini.
+                                </p>
+                            </div>
+                            <a href="{{ route('attendances.edit', $meeting->id) }}" 
+                               class="inline-flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-xl transition-all text-xs uppercase tracking-wider">
+                                Catat Sekarang
+                            </a>
+                        </div>
                     @endif
-                </div>
 
-                <!-- Action Buttons -->
-                <div class="flex gap-3">
-                    <a href="{{ route('attendances.edit', $meeting->id) }}" 
-                       class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                        ✏️ {{ __('Edit Absensi') }}
-                    </a>
-                    <a href="{{ route('attendances.index') }}" 
-                       class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                        {{ __('← Kembali') }}
-                    </a>
                 </div>
             </div>
+
         </div>
+
     </div>
 </x-mentor-layout>

@@ -23,4 +23,16 @@ class ClassModel extends Model
     {
         return $this->hasMany(Meeting::class, 'class_id');
     }
+
+    // Relationship ke assignments di kelas
+    public function assignments()
+    {
+        return $this->hasMany(Assignments::class, 'class_id');
+    }
+
+    // Relationship ke materials di kelas
+    public function materials()
+    {
+        return $this->hasMany(Material::class, 'class_id');
+    }
 }

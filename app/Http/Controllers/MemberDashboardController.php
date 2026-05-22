@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Auth;
 
 class MemberDashboardController extends Controller
 {
+    /**
+     * Display the member's customized interactive dashboard.
+     */
     public function index()
     {
         $member = Auth::user();
@@ -16,12 +19,12 @@ class MemberDashboardController extends Controller
 
         if (!$classId) {
             return view('dashboard.member', [
-                'attendanceCards' => [
-                    ['label' => 'Hadir', 'status' => 'hadir', 'count' => 0],
-                    ['label' => 'Izin', 'status' => 'izin', 'count' => 0],
-                    ['label' => 'Sakit', 'status' => 'sakit', 'count' => 0],
-                    ['label' => 'Alpa', 'status' => 'alpa', 'count' => 0],
-                ],
+                'attendanceCards' => collect([
+                    ['label' => 'Hadir', 'status' => 'hadir', 'count' => 0, 'percentage' => 0, 'colorClass' => 'text-emerald-500'],
+                    ['label' => 'Izin', 'status' => 'izin', 'count' => 0, 'percentage' => 0, 'colorClass' => 'text-blue-500'],
+                    ['label' => 'Sakit', 'status' => 'sakit', 'count' => 0, 'percentage' => 0, 'colorClass' => 'text-amber-500'],
+                    ['label' => 'Alpa', 'status' => 'alpa', 'count' => 0, 'percentage' => 0, 'colorClass' => 'text-rose-500'],
+                ]),
                 'progressSummary' => [
                     'completed_assignments' => 0,
                     'total_assignments' => 0,
@@ -31,38 +34,43 @@ class MemberDashboardController extends Controller
                     'overdue_count' => 0,
                 ],
                 'assignmentList' => collect(),
+                'upcomingMeetings' => collect(),
+                'totalMeetings' => 0,
+                'totalMeetWithAttendance' => 0,
             ]);
         }
 
-        $statusCounts = Attendances::query()
-            ->where('member_id', $member->id)
-            ->selectRaw('status, COUNT(*) as total')
-            ->groupBy('status')
-            ->pluck('total', 'status');
+        // Fetch attendance grouped by status via Eloquent User helper method
+        $statusCounts = $member->getAttendanceStatusCounts();
+
+        $totalMeetWithAttendance = $statusCounts->sum();
 
         $attendanceCards = collect([
-            ['label' => 'Hadir', 'status' => 'hadir'],
-            ['label' => 'Izin', 'status' => 'izin'],
-            ['label' => 'Sakit', 'status' => 'sakit'],
-            ['label' => 'Alpa', 'status' => 'alpa'],
-        ])->map(function (array $item) use ($statusCounts) {
+            ['label' => 'Hadir', 'status' => 'hadir', 'colorClass' => 'text-emerald-500'],
+            ['label' => 'Izin', 'status' => 'izin', 'colorClass' => 'text-blue-500'],
+            ['label' => 'Sakit', 'status' => 'sakit', 'colorClass' => 'text-amber-500'],
+            ['label' => 'Alpa', 'status' => 'alpa', 'colorClass' => 'text-rose-500'],
+        ])->map(function (array $item) use ($statusCounts, $totalMeetWithAttendance) {
             $count = (int) ($statusCounts[$item['status']] ?? 0);
+            $percentage = $totalMeetWithAttendance > 0 ? round(($count / $totalMeetWithAttendance) * 100) : 0;
 
             return [
                 'label' => $item['label'],
                 'status' => $item['status'],
                 'count' => $count,
+                'percentage' => $percentage,
+                'colorClass' => $item['colorClass'],
             ];
         });
 
-        $classAssignments = Assignments::query()
-            ->where('class_id', $classId)
+        // Get class assignments via Class Eloquent Relationship
+        $classAssignments = $member->class->assignments()
             ->select(['id', 'title', 'deadline'])
             ->orderBy('deadline')
             ->get();
 
-        $submittedAssignmentIds = PengumpulanTugas::query()
-            ->where('member_id', $member->id)
+        // Get submitted assignments via User Eloquent Relationship
+        $submittedAssignmentIds = $member->submissions()
             ->whereIn('assignment_id', $classAssignments->pluck('id'))
             ->pluck('assignment_id')
             ->unique()
@@ -72,7 +80,7 @@ class MemberDashboardController extends Controller
             ->map(function ($assignment) use ($submittedAssignmentIds) {
                 $deadline = $assignment->deadline;
                 $isOverdue = $deadline->isPast();
-                $diffInDays = now()->diffInDays($deadline, false);
+                $diffInDays = (int) round(now()->diffInDays($deadline, false));
                 $isSubmitted = $submittedAssignmentIds->contains($assignment->id);
 
                 return [
@@ -106,10 +114,23 @@ class MemberDashboardController extends Controller
             'overdue_count' => $overdueCount,
         ];
 
+        // Fetch scheduled class meetings (Events) via Class Eloquent Relationship
+        $upcomingMeetings = $member->class->meetings()
+            ->with('mentor')
+            ->orderBy('meeting_date', 'asc')
+            ->orderBy('meeting_time', 'asc')
+            ->take(3)
+            ->get();
+
+        $totalMeetings = $member->class->meetings()->count();
+
         return view('dashboard.member', compact(
             'attendanceCards',
             'progressSummary',
-            'assignmentList'
+            'assignmentList',
+            'upcomingMeetings',
+            'totalMeetings',
+            'totalMeetWithAttendance'
         ));
     }
 }

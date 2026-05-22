@@ -1,132 +1,123 @@
 <x-mentor-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Daftar Assignment') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Button Create Assignment -->
-            <div class="mb-8 flex justify-end">
-                <a 
-                    href="{{ route('assignment.create') }}"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 inline-flex items-center gap-2"
-                >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    + Buat Assignment Baru
-                </a>
+    <div class="space-y-8">
+        
+        <!-- Header Section -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/5">
+            <div>
+                <h1 class="text-3xl font-extrabold text-white tracking-tight">Kelola Tugas</h1>
+                <p class="text-slate-400 mt-1 text-sm">Buat, edit, dan awasi tugas yang diberikan untuk kelas Anda.</p>
             </div>
-
-            <!-- Success Message -->
-            @if (session('success'))
-                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 text-green-700">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-    <!-- Empty State -->
-    @if ($assignments->isEmpty())
-        <div class="bg-gray-50 rounded-lg border border-gray-200 p-12 text-center">
-            <div class="text-gray-400 mb-4">
-                <svg class="mx-auto h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            
+            <a href="{{ route('assignment.create') }}"
+               class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-purple-500/20 text-xs uppercase tracking-wider inline-flex items-center gap-2 self-start sm:self-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
                 </svg>
-            </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Belum ada assignment</h3>
-            <p class="text-gray-600 mb-6">Mulai dengan membuat assignment pertama Anda untuk kelas</p>
-            <a 
-                href="{{ route('assignment.create') }}"
-                class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
-            >
-                Buat Assignment Pertama
+                + Buat Tugas Baru
             </a>
         </div>
-    @else
-        <!-- Assignments Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach ($assignments as $assignment)
-                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-200">
-                    <!-- Card Header -->
-                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
-                        <h3 class="text-white font-bold text-lg truncate">{{ $assignment->title }}</h3>
-                        <p class="text-blue-100 text-sm mt-1">
-                            Kelas: <strong>{{ $assignment->class->name ?? 'N/A' }}</strong>
-                        </p>
-                    </div>
 
-                    <!-- Card Body -->
-                    <div class="px-6 py-4">
-                        <!-- Description Preview -->
-                        <p class="text-gray-600 text-sm line-clamp-2 mb-3">
-                            {{ Str::limit($assignment->description, 100) }}
-                        </p>
+        <!-- Success Alert -->
+        @if (session('success'))
+            <div class="bg-purple-600/20 border border-purple-500/30 text-purple-200 p-4 rounded-2xl text-sm shadow-xl flex items-center gap-3">
+                <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
 
-                        <!-- Deadline -->
-                        <div class="mb-3">
-                            <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Deadline</p>
-                            <p class="text-sm font-medium text-gray-900">
-                                {{ $assignment->deadline->format('d M Y, H:i') }}
-                            </p>
-                        </div>
-
-                        <!-- File/Link Status -->
-                        @if ($assignment->file_path)
-                            <div class="mb-4">
-                                @if (Str::startsWith($assignment->file_path, ['http://', 'https://']))
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                        🔗 Link Assignment
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">
-                                        📄 File Tersedia
-                                    </span>
-                                @endif
-                            </div>
-                        @endif
-
-                        <!-- Timestamps -->
-                        <div class="text-xs text-gray-400">
-                            <p>Dibuat: {{ $assignment->created_at->format('d M Y') }}</p>
-                        </div>
-                    </div>
-
-                    <!-- Card Footer -->
-                    <div class="bg-gray-50 px-6 py-4 flex gap-2">
-                        <a 
-                            href="{{ route('assignment.show', $assignment->id) }}"
-                            class="flex-1 text-center bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-2 px-3 rounded text-sm transition duration-200"
-                        >
-                            Lihat Detail
-                        </a>
-                        <a 
-                            href="{{ route('assignment.edit', $assignment->id) }}"
-                            class="flex-1 text-center bg-yellow-100 hover:bg-yellow-200 text-yellow-700 font-semibold py-2 px-3 rounded text-sm transition duration-200"
-                        >
-                            Edit
-                        </a>
-                        <form 
-                            action="{{ route('assignment.destroy', $assignment->id) }}" 
-                            method="POST" 
-                            class="flex-1"
-                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus assignment ini?');"
-                        >
-                            @csrf
-                            @method('DELETE')
-                            <button 
-                                type="submit"
-                                class="w-full bg-red-100 hover:bg-red-200 text-red-700 font-semibold py-2 px-3 rounded text-sm transition duration-200"
-                            >
-                                Hapus
-                            </button>
-                        </form>
+        <!-- Empty State -->
+        @if ($assignments->isEmpty())
+            <div class="bg-white/5 border border-white/10 rounded-[30px] p-12 text-center max-w-xl mx-auto">
+                <div class="text-purple-400 mb-4 flex justify-center">
+                    <div class="bg-purple-500/10 p-4 rounded-full">
+                        <svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
                     </div>
                 </div>
-            @endforeach
-        </div>
-    @endif
-        </div>
+                <h3 class="text-xl font-bold text-white mb-2">Belum ada tugas terdaftar</h3>
+                <p class="text-slate-400 text-sm mb-6 leading-relaxed">Mulai buat tugas pertama Anda untuk membagikan materi dan menguji kemampuan mahasiswa di kelas.</p>
+                <a href="{{ route('assignment.create') }}"
+                   class="inline-block bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg shadow-purple-500/20 text-xs uppercase tracking-wider">
+                    Buat Tugas Pertama
+                </a>
+            </div>
+        @else
+            <!-- Assignments Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach ($assignments as $assignment)
+                    <div class="bg-[#1f193f]/40 border border-white/5 rounded-[28px] overflow-hidden shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group min-h-[300px]">
+                        
+                        <!-- Top Header -->
+                        <div class="bg-gradient-to-r from-[#44238c]/40 to-[#271552]/40 border-b border-white/5 px-6 py-5">
+                            <span class="inline-block bg-purple-500/20 text-purple-300 border border-purple-500/30 text-[9px] font-extrabold px-2.5 py-0.5 rounded-full mb-2 uppercase tracking-wider">
+                                Kelas: {{ $assignment->class->name ?? 'N/A' }}
+                            </span>
+                            <h3 class="text-lg font-black text-white leading-snug group-hover:text-purple-300 transition-colors line-clamp-1">
+                                {{ $assignment->title }}
+                            </h3>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="px-6 py-5 flex-1 flex flex-col justify-between gap-4">
+                            <!-- Description -->
+                            <p class="text-slate-400 text-xs leading-relaxed line-clamp-3">
+                                {{ $assignment->description }}
+                            </p>
+
+                            <!-- Info Grid -->
+                            <div class="space-y-3 pt-3 border-t border-white/5">
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Deadline</span>
+                                    <span class="text-white font-bold">{{ $assignment->deadline->format('d M Y, H:i') }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Attachment</span>
+                                    @if ($assignment->file_path)
+                                        @if (Str::startsWith($assignment->file_path, ['http://', 'https://']))
+                                            <span class="text-amber-400 font-bold flex items-center gap-1">
+                                                🔗 Tautan Luar
+                                            </span>
+                                        @else
+                                            <span class="text-emerald-400 font-bold flex items-center gap-1">
+                                                📄 Berkas File
+                                            </span>
+                                        @endif
+                                    @else
+                                        <span class="text-slate-500">-</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Footer actions -->
+                        <div class="bg-white/5 px-6 py-4 flex gap-2 border-t border-white/5">
+                            <a href="{{ route('assignment.show', $assignment->id) }}"
+                               class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200">
+                                Detail
+                            </a>
+                            <a href="{{ route('assignment.edit', $assignment->id) }}"
+                               class="bg-amber-600/20 hover:bg-amber-600 border border-amber-500/30 text-amber-200 hover:text-white font-bold py-2 px-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200">
+                                Edit
+                            </a>
+                            <form action="{{ route('assignment.destroy', $assignment->id) }}" 
+                                  method="POST" 
+                                  class="inline"
+                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus assignment ini?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                        class="w-full bg-rose-600/20 hover:bg-rose-600 border border-rose-500/30 text-rose-200 hover:text-white font-bold py-2 px-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200">
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
+                        
+                    </div>
+                @endforeach
+            </div>
+        @endif
     </div>
 </x-mentor-layout>

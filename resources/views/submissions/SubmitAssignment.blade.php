@@ -56,7 +56,7 @@
                                         $now = \Carbon\Carbon::now();
                                         $deadline = $assignment->deadline;
                                         $isOverdue = $now > $deadline;
-                                        $daysLeft = $now->diffInDays($deadline);
+                                        $daysLeft = (int) round($now->diffInDays($deadline));
                                     @endphp
                                     <span class="@if ($isOverdue) text-red-400 @else text-green-400 @endif font-semibold">
                                         @if ($isOverdue)

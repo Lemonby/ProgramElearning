@@ -1,116 +1,157 @@
 <x-mentor-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Daftar Absensi') }}
-            </h2>
-            <a href="{{ route('attendances.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                {{ __('+ Buat Absensi') }}
-            </a>
+    <div class="space-y-8">
+        
+        <!-- Header Section -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-white/5">
+            <div>
+                <h1 class="text-3xl font-extrabold text-white tracking-tight">Presensi & Kehadiran</h1>
+                <p class="text-slate-400 mt-1 text-sm">Kelola lembar absensi siswa untuk setiap sesi pertemuan kelas.</p>
+            </div>
+            <div>
+                <a href="{{ route('attendances.create') }}" 
+                   class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-5 rounded-xl transition-all shadow-lg shadow-purple-500/20 text-xs uppercase tracking-wider">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Buat Lembar Presensi
+                </a>
+            </div>
         </div>
-    </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('success'))
-                <div class="mb-4 px-4 py-3 bg-green-100 border border-green-400 text-green-700 rounded dark:bg-green-900 dark:border-green-700 dark:text-green-100">
-                    {{ session('success') }}
+        <!-- Session Status Notifications -->
+        @if (session('success'))
+            <div class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 p-4 rounded-2xl text-xs font-semibold shadow-xl flex items-center gap-2.5">
+                <div class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
                 </div>
-            @endif
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
 
-            @if (session('error'))
-                <div class="mb-4 px-4 py-3 bg-red-100 border border-red-400 text-red-700 rounded dark:bg-red-900 dark:border-red-700 dark:text-red-100">
-                    {{ session('error') }}
+        @if (session('error'))
+            <div class="bg-rose-500/10 border border-rose-500/30 text-rose-200 p-4 rounded-2xl text-xs font-semibold shadow-xl flex items-center gap-2.5">
+                <div class="w-6 h-6 rounded-full bg-rose-500/20 text-rose-300 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
                 </div>
-            @endif
+                <span>{{ session('error') }}</span>
+            </div>
+        @endif
 
-            @if ($meetings->count() > 0)
-                <div class="space-y-4">
-                    @foreach ($meetings as $meeting)
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                            <div class="mb-4">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                            {{ $meeting->title }}
-                                        </h3>
-                                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                                            Kelas: <strong>{{ $meeting->class->description ?? 'N/A' }}</strong>
-                                        </p>
-                                    </div>
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
-                                        {{ $meeting->attendances->count() }} / {{ $meeting->class->members->count() }}
+        <!-- Attendance List -->
+        @if ($meetings->count() > 0)
+            <div class="space-y-6">
+                @foreach ($meetings as $meeting)
+                    <div class="group bg-[#1f193f]/40 border border-white/5 hover:border-purple-500/30 rounded-[28px] p-6 shadow-xl hover:shadow-2xl hover:shadow-purple-950/10 transition-all duration-300 relative overflow-hidden">
+                        
+                        <!-- Glow effect -->
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-3xl group-hover:bg-purple-500/10 transition-all duration-300 pointer-events-none"></div>
+
+                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                            
+                            <!-- Left: Session Title & Info -->
+                            <div class="space-y-3 flex-1">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="px-2.5 py-1 rounded-full text-[9px] font-black tracking-wider uppercase bg-purple-500/10 text-purple-300 border border-purple-500/20">
+                                        {{ $meeting->class->description ?? 'N/A' }}
+                                    </span>
+                                    <span class="px-2.5 py-1 rounded-full text-[9px] font-black tracking-wider uppercase bg-white/5 text-slate-300 border border-white/10 flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                        {{ $meeting->attendances->count() }} / {{ $meeting->class->members->count() }} Terisi
                                     </span>
                                 </div>
-                            </div>
-
-                            <div class="mb-4 text-xs text-gray-500 dark:text-gray-400 space-y-1">
-                                <p>
-                                    <strong>Keterangan:</strong> {{ substr($meeting->description ?? 'Tidak ada keterangan', 0, 100) }}
+                                <h3 class="text-xl font-bold text-white group-hover:text-purple-300 transition-colors">
+                                    {{ $meeting->title }}
+                                </h3>
+                                <p class="text-slate-400 text-xs leading-relaxed max-w-2xl line-clamp-2">
+                                    {{ $meeting->description ?? 'Tidak ada keterangan tambahan.' }}
                                 </p>
                             </div>
 
-                            <!-- Attendance Summary -->
-                            <div class="mb-4 grid grid-cols-4 gap-2 text-sm">
-                                <div class="bg-green-50 dark:bg-green-900/20 p-2 rounded">
-                                    <p class="text-green-700 dark:text-green-300 font-semibold">
-                                        {{ $meeting->getPresentCount() }}
-                                    </p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400">Hadir</p>
+                            <!-- Middle: Quick Breakdown Stats -->
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:w-96 flex-shrink-0">
+                                <div class="bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-2xl text-center">
+                                    <span class="block text-lg font-black text-emerald-400">{{ $meeting->getPresentCount() }}</span>
+                                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Hadir</span>
                                 </div>
-                                <div class="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded">
-                                    <p class="text-yellow-700 dark:text-yellow-300 font-semibold">
-                                        {{ $meeting->getExcusedCount() }}
-                                    </p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400">Izin</p>
+                                <div class="bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-2xl text-center">
+                                    <span class="block text-lg font-black text-amber-400">{{ $meeting->getExcusedCount() }}</span>
+                                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Izin</span>
                                 </div>
-                                <div class="bg-orange-50 dark:bg-orange-900/20 p-2 rounded">
-                                    <p class="text-orange-700 dark:text-orange-300 font-semibold">
-                                        {{ $meeting->getSickCount() }}
-                                    </p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400">Sakit</p>
+                                <div class="bg-cyan-500/10 border border-cyan-500/20 p-2.5 rounded-2xl text-center">
+                                    <span class="block text-lg font-black text-cyan-400">{{ $meeting->getSickCount() }}</span>
+                                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Sakit</span>
                                 </div>
-                                <div class="bg-red-50 dark:bg-red-900/20 p-2 rounded">
-                                    <p class="text-red-700 dark:text-red-300 font-semibold">
-                                        {{ $meeting->getAbsentCount() }}
-                                    </p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400">Alpa</p>
+                                <div class="bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-2xl text-center">
+                                    <span class="block text-lg font-black text-rose-400">{{ $meeting->getAbsentCount() }}</span>
+                                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Alpa</span>
                                 </div>
                             </div>
 
-                            <div class="flex gap-2 flex-wrap">
+                            <!-- Right: Actions -->
+                            <div class="flex items-center gap-2 border-t lg:border-t-0 border-white/5 pt-4 lg:pt-0 justify-end flex-shrink-0 relative z-10">
                                 <a href="{{ route('attendances.show', $meeting->id) }}" 
-                                   class="inline-flex items-center px-3 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                                    👁️ {{ __('Lihat Detail') }}
+                                   class="inline-flex items-center gap-1 bg-purple-600/15 hover:bg-purple-600 text-purple-300 hover:text-white font-bold py-2 px-3.5 rounded-xl transition-all text-xs border border-purple-500/20"
+                                   title="Lihat Detail Absensi">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                    Detail
                                 </a>
                                 <a href="{{ route('attendances.edit', $meeting->id) }}" 
-                                   class="inline-flex items-center px-3 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                                    ✏️ {{ __('Edit') }}
+                                   class="p-2 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white rounded-xl transition-all"
+                                   title="Edit Absensi">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                    </svg>
                                 </a>
                                 <form action="{{ route('attendances.destroy', $meeting->id) }}" 
                                       method="POST" 
-                                      onsubmit="return confirm('Yakin ingin menghapus semua absensi untuk pertemuan ini?');"
+                                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus seluruh data lembar absensi untuk pertemuan ini?');"
                                       class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="inline-flex items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                                        🗑️ {{ __('Hapus') }}
+                                    <button type="submit" 
+                                            class="p-2 bg-rose-500/10 hover:bg-rose-500 border border-rose-500/20 text-rose-300 hover:text-white rounded-xl transition-all"
+                                            title="Hapus Lembar Absensi">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
                                     </button>
                                 </form>
                             </div>
+
                         </div>
-                    @endforeach
+
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <!-- Empty State Card -->
+            <div class="bg-[#1f193f]/40 border border-white/5 rounded-[28px] p-12 text-center shadow-xl space-y-6">
+                <div class="w-16 h-16 rounded-full bg-purple-600/10 text-purple-400 flex items-center justify-center mx-auto border border-purple-500/20">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                    </svg>
                 </div>
-            @else
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-12 text-center">
-                    <p class="text-gray-500 dark:text-gray-400 mb-4">
-                        {{ __('Belum ada data absensi.') }}
+                <div class="max-w-md mx-auto space-y-2">
+                    <h3 class="text-xl font-extrabold text-white">Belum Ada Rekap Absensi</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">
+                        Anda belum membuat rekap presensi kelas atau mengabsen siswa. Mulai dengan membuat lembar absensi baru berdasarkan sesi pertemuan aktif.
                     </p>
-                    <a href="{{ route('attendances.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                        {{ __('Buat Absensi Baru') }}
-                    </a>
                 </div>
-            @endif
-        </div>
+                <a href="{{ route('attendances.create') }}" 
+                   class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-purple-500/20 text-xs uppercase tracking-wider">
+                    Buat Absensi Pertama
+                </a>
+            </div>
+        @endif
+
     </div>
 </x-mentor-layout>

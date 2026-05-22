@@ -29,11 +29,10 @@ class SubmissionController extends Controller
 
         abort_unless($classId, 403, 'Kelas member belum diset.');
 
-        $assignments = Assignments::query()
+        $assignments = $user->class->assignments()
             ->with(['class', 'submissions' => function ($query) use ($user) {
                 $query->where('member_id', $user->id);
             }])
-            ->where('class_id', $classId)
             ->latest()
             ->get()
             ->map(function ($assignment) {
@@ -54,10 +53,9 @@ class SubmissionController extends Controller
         $assignment = $this->getAssignmentForMemberClassOrFail($assignmentId);
         $userId = Auth::id();
 
-        // Check if already submitted
-        $existingSubmission = PengumpulanTugas::query()
+        // Check if already submitted via User Eloquent relationship
+        $existingSubmission = $user->submissions()
             ->where('assignment_id', $assignment->id)
-            ->where('member_id', $userId)
             ->first();
 
         if ($existingSubmission) {
@@ -228,13 +226,11 @@ class SubmissionController extends Controller
 
     private function getAssignmentForMemberClassOrFail(int $assignmentId): Assignments
     {
-        $classId = $this->getMemberClassId();
+        $user = Auth::user();
+        abort_unless($user->class_id, 403, 'Kelas member belum diset.');
 
-        abort_unless($classId, 403, 'Kelas member belum diset.');
-
-        return Assignments::query()
+        return $user->class->assignments()
             ->whereKey($assignmentId)
-            ->where('class_id', $classId)
             ->firstOrFail();
     }
 
