@@ -54,7 +54,7 @@
                             <label for="meeting_link" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Link Meeting
                             </label>
-                            <input type="url" name="meeting_link" id="meeting_link" placeholder="https://..." value="{{ old('meeting_link', $meeting->meeting_link) }}" required
+                            <input type="url" name="meeting_link" id="meeting_link" placeholder="https://..." value="{{ old('meeting_link', $meeting->meeting_link) }}"
                                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                         </div>
 

@@ -34,7 +34,8 @@ class MeetingController extends Controller
             'title' => 'required',
             'meeting_date' => 'required',
             'meeting_time' => 'required',
-            'meeting_link' => 'required',
+            'type' => 'required|in:online,offline',
+            'meeting_link' => 'nullable|required_if:type,online|url',
         ]);
 
         Meeting::create([
@@ -43,6 +44,7 @@ class MeetingController extends Controller
             'title' => $request->title,
             'meeting_date' => $request->meeting_date,
             'meeting_time' => $request->meeting_time,
+            'type' => $request->type,
             'meeting_link' => $request->meeting_link,
             'description' => $request->description,
         ]);
@@ -85,13 +87,15 @@ class MeetingController extends Controller
             'title' => 'required',
             'meeting_date' => 'required',
             'meeting_time' => 'required',
-            'meeting_link' => 'required',
+            'type' => 'required|in:online,offline',
+            'meeting_link' => 'nullable|required_if:type,online|url',
         ]);
 
         $meeting->update([
             'title' => $request->title,
             'meeting_date' => $request->meeting_date,
             'meeting_time' => $request->meeting_time,
+            'type' => $request->type,
             'meeting_link' => $request->meeting_link,
             'description' => $request->description,
         ]);

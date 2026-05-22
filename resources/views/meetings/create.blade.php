@@ -50,10 +50,22 @@
                         </div>
 
                         <div>
-                            <label for="meeting_link" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Link Meeting
+                            <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Tipe Meeting
                             </label>
-                            <input type="url" name="meeting_link" id="meeting_link" placeholder="https://..." value="{{ old('meeting_link') }}" required
+                            <select name="type" id="type" required
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                                <option value="">Pilih tipe meeting</option>
+                                <option value="online" {{ old('type') === 'online' ? 'selected' : '' }}>Online</option>
+                                <option value="offline" {{ old('type') === 'offline' ? 'selected' : '' }}>Offline</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="meeting_link" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Link Meeting <span id="meeting-link-note" class="text-xs text-gray-500 dark:text-gray-400">(wajib untuk online, opsional untuk offline)</span>
+                            </label>
+                            <input type="url" name="meeting_link" id="meeting_link" placeholder="https://..." value="{{ old('meeting_link') }}"
                                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                         </div>
 
@@ -78,4 +90,28 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const typeSelect = document.getElementById('type');
+            const meetingLinkInput = document.getElementById('meeting_link');
+            const meetingLinkNote = document.getElementById('meeting-link-note');
+
+            const updateMeetingLinkRequirement = () => {
+                const isOnline = typeSelect.value === 'online';
+
+                meetingLinkInput.required = isOnline;
+                meetingLinkNote.textContent = isOnline
+                    ? '(wajib untuk online, opsional untuk offline)'
+                    : '(opsional untuk offline)';
+
+                if (!isOnline) {
+                    meetingLinkInput.setCustomValidity('');
+                }
+            };
+
+            typeSelect.addEventListener('change', updateMeetingLinkRequirement);
+            updateMeetingLinkRequirement();
+        });
+    </script>
 </x-mentor-layout>

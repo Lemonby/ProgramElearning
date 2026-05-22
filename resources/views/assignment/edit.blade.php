@@ -23,26 +23,13 @@
             @csrf
             @method('PUT')
 
-            <!-- Class Selection -->
-            <div class="mb-6">
-                <label for="class_id" class="block text-sm font-medium text-gray-700 mb-2">
-                    Kelas <span class="text-red-500">*</span>
-                </label>
-                <select 
-                    id="class_id" 
-                    name="class_id"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('class_id') border-red-500 @enderror"
-                    required
-                >
-                    @foreach($classes as $class)
-                        <option value="{{ $class->id }}" {{ old('class_id', $assignment->class_id) == $class->id ? 'selected' : '' }}>
-                            {{ $class->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('class_id')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
+            <!-- Class Info -->
+            <div class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p class="text-sm text-blue-900 font-semibold mb-1">Kelas Assignment</p>
+                <p class="text-blue-700 text-sm">
+                    Assignment ini terhubung ke kelas:
+                    <span class="font-semibold">{{ $class->name ?? $assignment->class->name ?? 'Kelas belum diset' }}</span>
+                </p>
             </div>
 
             <!-- Title -->
@@ -55,7 +42,7 @@
                     id="title" 
                     name="title"
                     maxlength="255"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('title') border-red-500 @enderror"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 {{ $errors->has('title') ? 'border-red-500' : 'border-gray-300' }}"
                     placeholder="Contoh: Membuat Aplikasi To-Do List"
                     value="{{ old('title', $assignment->title) }}"
                     required
@@ -75,7 +62,7 @@
                     name="description"
                     rows="6"
                     maxlength="5000"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('description') border-red-500 @enderror"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 {{ $errors->has('description') ? 'border-red-500' : 'border-gray-300' }}"
                     placeholder="Jelaskan detail assignment, requirement, dan kriteria penilaian..."
                     required
                 >{{ old('description', $assignment->description) }}</textarea>
@@ -94,7 +81,7 @@
                     type="datetime-local" 
                     id="deadline" 
                     name="deadline"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('deadline') border-red-500 @enderror"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 {{ $errors->has('deadline') ? 'border-red-500' : 'border-gray-300' }}"
                     value="{{ old('deadline', $assignment->deadline->format('Y-m-d\TH:i')) }}"
                     required
                 >
@@ -135,7 +122,7 @@
                         type="file" 
                         id="file_assignment" 
                         name="file_assignment"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('file_assignment') border-red-500 @enderror"
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 {{ $errors->has('file_assignment') ? 'border-red-500' : 'border-gray-300' }}"
                         accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.rar"
                     >
                     <p class="text-xs text-gray-500 mt-1">
@@ -162,7 +149,7 @@
                         type="url" 
                         id="link_assignment" 
                         name="link_assignment"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('link_assignment') border-red-500 @enderror"
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 {{ $errors->has('link_assignment') ? 'border-red-500' : 'border-gray-300' }}"
                         placeholder="https://drive.google.com/... atau https://github.com/..."
                         value="{{ old('link_assignment') }}"
                     >

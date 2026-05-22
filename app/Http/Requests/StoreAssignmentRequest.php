@@ -24,7 +24,6 @@ class StoreAssignmentRequest extends FormRequest
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:5000',
             'deadline' => 'required|date|after_or_equal:today',
-            'class_id' => 'required|integer|exists:classes,id',
             
             // File atau Link Materi
             'file_assignment' => 'nullable|required_without:link_assignment|file|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar|max:102400',
@@ -49,10 +48,6 @@ class StoreAssignmentRequest extends FormRequest
             'deadline.required' => 'Batas waktu assignment harus diisi.',
             'deadline.date' => 'Batas waktu assignment harus berupa tanggal yang valid.',
             'deadline.after_or_equal' => 'Batas waktu assignment tidak boleh lebih awal dari hari ini.',
-            
-            'class_id.required' => 'Kelas harus dipi lih.',
-            'class_id.integer' => 'Kelas harus berupa angka.',
-            'class_id.exists' => 'Kelas tidak ditemukan.',
             
             'file_assignment.required_without' => 'File atau link assignment harus diisi minimal salah satu.',
             'file_assignment.file' => 'File assignment harus berupa file yang valid.',

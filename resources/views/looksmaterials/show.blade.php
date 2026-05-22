@@ -20,11 +20,11 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <!-- Badge Class -->
-                    <div class="mb-4">
+                    {{-- <div class="mb-4">
                         <span class="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 text-xs font-semibold rounded-full">
                             {{ $material->class->description ?? 'Kelas' }}
                         </span>
-                    </div>
+                    </div> --}}
 
                     <!-- Title -->
                     <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">

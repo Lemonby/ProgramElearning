@@ -29,47 +29,13 @@
         <form action="{{ route('assignment.store') }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow-md p-6">
             @csrf
 
-            <!-- Class Selection -->
-            <div class="mb-6">
-                <label for="class_id" class="block text-sm font-medium text-gray-700 mb-2">
-                    Kelas <span class="text-red-500">*</span>
-                </label>
-                <select 
-                    id="class_id" 
-                    name="class_id"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('class_id') border-red-500 @enderror"
-                    required
-                >
-                    <option value="">-- Pilih Kelas --</option>
-                    @foreach($classes as $class)
-                        <option value="{{ $class->id }}" {{ old('class_id') == $class->id ? 'selected' : '' }}>
-                            {{ $class->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('class_id')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- Title -->
-            <div class="mb-6">
-                <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
-                    Judul Assignment <span class="text-red-500">*</span>
-                </label>
-                <input 
-                    type="text" 
-                    id="title" 
-                    name="title"
-                    maxlength="255"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('title') border-red-500 @enderror"
-                    placeholder="Contoh: Membuat Aplikasi To-Do List"
-                    value="{{ old('title') }}"
-                    required
-                >
-                @error('title')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
+            <!-- Class Info -->
+            <div class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p class="text-sm text-blue-900 font-semibold mb-1">Kelas Aktif</p>
+                <p class="text-blue-700 text-sm">
+                    Assignment akan otomatis terhubung ke kelas:
+                    <span class="font-semibold">{{ $class->name ?? 'Kelas belum diset' }}</span>
+                </p>
             </div>
 
             <!-- Description -->
@@ -82,7 +48,7 @@
                     name="description"
                     rows="6"
                     maxlength="5000"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('description') border-red-500 @enderror"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 {{ $errors->has('description') ? 'border-red-500' : 'border-gray-300' }}"
                     placeholder="Jelaskan detail assignment, requirement, dan kriteria penilaian..."
                     required
                 >{{ old('description') }}</textarea>
@@ -101,7 +67,7 @@
                     type="datetime-local" 
                     id="deadline" 
                     name="deadline"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('deadline') border-red-500 @enderror"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 {{ $errors->has('deadline') ? 'border-red-500' : 'border-gray-300' }}"
                     value="{{ old('deadline') }}"
                     required
                 >
@@ -127,7 +93,7 @@
                             type="file" 
                             id="file_assignment" 
                             name="file_assignment"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('file_assignment') border-red-500 @enderror"
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 {{ $errors->has('file_assignment') ? 'border-red-500' : 'border-gray-300' }}"
                             accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.rar"
                         >
                         <p class="text-xs text-gray-500 mt-1">
@@ -155,7 +121,7 @@
                         type="url" 
                         id="link_assignment" 
                         name="link_assignment"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('link_assignment') border-red-500 @enderror"
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 {{ $errors->has('link_assignment') ? 'border-red-500' : 'border-gray-300' }}"
                         placeholder="https://drive.google.com/... atau https://github.com/..."
                         value="{{ old('link_assignment') }}"
                     >
@@ -189,7 +155,7 @@
                 <li>• Jelaskan requirement assignment dengan detail agar siswa memahami apa yang harus dikerjakan</li>
                 <li>• Tentukan deadline yang cukup realistis untuk siswa menyelesaikan assignment</li>
                 <li>• Berikan referensi/materi dalam file atau link untuk membantu siswa</li>
-                <li>• Pastikan kelas yang dipilih sudah benar sebelum membuat assignment</li>
+                <li>• Assignment otomatis mengikuti kelas mentor yang sedang login</li>
             </ul>
         </div>
         </div>
