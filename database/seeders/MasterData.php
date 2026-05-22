@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
 use App\Models\Classes;
@@ -12,116 +12,226 @@ use App\Models\Meeting;
 use App\Models\Assignments;
 use App\Models\Submission;
 use App\Models\Attendances;
-use App\Models\Notification;
 
 class MasterData extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-
     public function run(): void
     {
         $faker = \Faker\Factory::create('id_ID');
 
-        // buat 3 kelas
-        for ($i = 0; $i < 3; $i++) {
-            Classes::create([
-                'name' => $faker->sentence(3),
-                'description' => $faker->paragraph(),
+        // ============================================================
+        // AKUN FIXED UNTUK TESTING
+        // mentor: mentor@test.com / password
+        // member: member@test.com / password
+        // ============================================================
+
+        // ============================================================
+        // CLASSES
+        // ============================================================
+
+        $classNames = ['Web Development', 'UI/UX Design', 'Data Science'];
+        $classes = [];
+
+        foreach ($classNames as $name) {
+            $classes[] = Classes::create([
+                'name'        => $name,
+                'description' => $faker->paragraph(3),
             ]);
         }
-        $classes = Classes::all(); 
 
-        // buat 18 user member per kelas (total 54 member)
-        foreach ($classes as $class) {
-            for ($n = 0; $n < 18; $n++) {
-                User::create([
-                    'name' => $faker->name(),
-                    'email' => $faker->unique()->safeEmail(),
-                    'password' => bcrypt('password'),
-                    'role' => 'member',
+        // ============================================================
+        // USERS — MENTOR (1 per kelas)
+        // ============================================================
+
+        $mentors = [];
+        $isFirstMentor = true;
+
+        foreach ($classes as $index => $class) {
+            if ($isFirstMentor) {
+                // Akun mentor fixed untuk testing
+                $mentors[] = User::create([
+                    'name'     => 'Mentor Test',
+                    'email'    => 'mentor@test.com',
+                    'password' => Hash::make('password'),
+                    'role'     => 'mentor',
+                    'class_id' => $class->id,
+                ]);
+                $isFirstMentor = false;
+            } else {
+                $mentors[] = User::create([
+                    'name'     => $faker->name(),
+                    'email'    => $faker->unique()->safeEmail(),
+                    'password' => Hash::make('password'),
+                    'role'     => 'mentor',
                     'class_id' => $class->id,
                 ]);
             }
         }
 
-        // buat 3 user mentor (1 mentor per kelas)
-        foreach ($classes as $class) {
-            User::create([
-                'name' => $faker->name(),
-                'email' => $faker->unique()->safeEmail(),
-                'password' => bcrypt('password'),
-                'role' => 'mentor',
-                'class_id' => $class->id,
-            ]);
+        // ============================================================
+        // USERS — MEMBER (10 per kelas)
+        // ============================================================
+
+        $membersByClass = [];
+        $isFirstMember  = true;
+
+        foreach ($classes as $index => $class) {
+            $membersByClass[$class->id] = [];
+
+            for ($n = 0; $n < 10; $n++) {
+                if ($isFirstMember) {
+                    // Akun member fixed untuk testing
+                    $member = User::create([
+                        'name'     => 'Member Test',
+                        'email'    => 'member@test.com',
+                        'password' => Hash::make('password'),
+                        'role'     => 'member',
+                        'class_id' => $class->id,
+                    ]);
+                    $isFirstMember = false;
+                } else {
+                    $member = User::create([
+                        'name'     => $faker->name(),
+                        'email'    => $faker->unique()->safeEmail(),
+                        'password' => Hash::make('password'),
+                        'role'     => 'member',
+                        'class_id' => $class->id,
+                    ]);
+                }
+
+                $membersByClass[$class->id][] = $member;
+            }
         }
 
-        // // buat 5 materi untuk setiap kelas
-        // foreach ($classes as $class) {
-        //     for ($j = 0; $j < 5; $j++) {
-        //         Material::create([
-        //             'class_id' => $class->id,
-        //             'title' => $faker->sentence(4),
-        //             'description' => $faker->paragraph(),
-        //             'file_url' => $faker->url(),
-        //         ]);
-        //     }
-        // }
+        // ============================================================
+        // MATERIALS (5 per kelas)
+        // ============================================================
 
-        // // buat 3 pertemuan untuk setiap kelas
-        // foreach ($classes as $class) {
-        //     for ($k = 0; $k < 3; $k++) {
-        //         Meeting::create([
-        //             'class_id' => $class->id,
-        //             'title' => $faker->sentence(4),
-        //             'meeting_time' => $faker->dateTimeBetween('+1 week', '+1 month'),
-        //             'meeting_link' => $faker->url(),
-        //         ]);
-        //     }
-        // }
+        $materialTopics = [
+            'Web Development' => ['HTML & CSS Dasar', 'JavaScript Fundamentals', 'Laravel Framework', 'REST API', 'Deployment & CI/CD'],
+            'UI/UX Design'    => ['Prinsip Desain', 'Figma Fundamentals', 'User Research', 'Prototyping', 'Usability Testing'],
+            'Data Science'    => ['Python untuk Data', 'Statistik Dasar', 'Pandas & NumPy', 'Machine Learning', 'Visualisasi Data'],
+        ];
 
-        // // buat 2 assessment untuk setiap kelas
-        // foreach ($classes as $class) {
-        //     for ($l = 0; $l < 2; $l++) {
-        //         Assignments::create([
-        //             'class_id' => $class->id,
-        //             'title' => $faker->sentence(4),
-        //             'description' => $faker->paragraph(),
-        //             'deadline' => $faker->dateTimeBetween('+1 week', '+1 month'),
-        //         ]);
-        //     }
-        // }
+        foreach ($classes as $class) {
+            $topics = $materialTopics[$class->name];
+            foreach ($topics as $topic) {
+                Material::create([
+                    'class_id'    => $class->id,
+                    'title'       => $topic,
+                    'description' => $faker->paragraph(2),
+                    'file_url'    => 'https://storage.example.com/materials/' . \Str::slug($topic) . '.pdf',
+                ]);
+            }
+        }
 
-        // // =======================================================================
-        // // 4. TERAKHIR DATA SUBMISSION DAN ATTENDANCE (Aman karena User ID nya sudah ada)
-        // // =======================================================================
+        // ============================================================
+        // MEETINGS (4 per kelas)
+        // ============================================================
 
-        // // buat 10 submission untuk setiap assessment
-        // $assignments = Assignments::all();
-        // foreach ($assignments as $assignment) {
-        //     for ($m = 0; $m < 10; $m++) {
-        //         Submission::create([
-        //             'assignment_id' => $assignment->id, // Pastikan kolom ini match dengan database (assignment_id vs assessment_id)
-        //             'member_id' => $faker->numberBetween(2, 50), // ID dimulai dari 2, karena ID 1 adalah 'Agung' (mentor)
-        //             'file_url' => $faker->url(),
-        //             'submitted_at' => $faker->dateTimeBetween('-1 week', 'now'),
-        //             'graded_at' => $faker->dateTimeBetween('now', '+1 week'),
-        //         ]);
-        //     }
-        // }
+        $meetingsByClass = [];
 
-        // // buat 5 attendance untuk setiap pertemuan
-        // $meetings = Meeting::all();
-        // foreach ($meetings as $meeting) {
-        //     for ($o = 0; $o < 5; $o++) {
-        //         Attendances::create([
-        //             'meeting_id' => $meeting->id,
-        //             'member_id' => $faker->numberBetween(2, 50), 
-        //             'status' => $faker->randomElement(['present', 'absent', 'late']),
-        //             'input_by' => $faker->numberBetween(51, 54), // Id mentor yang buat disesuaikan dengan urutan id mentor (biasanya di ID besar paling akhir)
-        //         ]);
-        //     }
-        // }
+        foreach ($classes as $index => $class) {
+            $mentor = $mentors[$index];
+            $meetingsByClass[$class->id] = [];
+
+            for ($k = 1; $k <= 4; $k++) {
+                $date = now()->addWeeks($k);
+
+                $meeting = Meeting::create([
+                    'class_id'     => $class->id,
+                    'mentor_id'    => $mentor->id,
+                    'title'        => "Pertemuan {$k} — {$class->name}",
+                    'meeting_date' => $date->toDateString(),
+                    'meeting_time' => '19:00:00',
+                    'meeting_link' => 'https://meet.google.com/' . $faker->lexify('???-????-???'),
+                    'description'  => $faker->sentence(10),
+                ]);
+
+                $meetingsByClass[$class->id][] = $meeting;
+            }
+        }
+
+        // ============================================================
+        // ASSIGNMENTS (3 per kelas)
+        // ============================================================
+
+        $assignmentsByClass = [];
+
+        foreach ($classes as $class) {
+            $assignmentsByClass[$class->id] = [];
+
+            $assignmentTitles = [
+                "Tugas 1 — Praktik Dasar {$class->name}",
+                "Tugas 2 — Studi Kasus {$class->name}",
+                "Tugas Akhir — Project {$class->name}",
+            ];
+
+            foreach ($assignmentTitles as $i => $title) {
+                $assignment = Assignments::create([
+                    'class_id'    => $class->id,
+                    'title'       => $title,
+                    'description' => $faker->paragraph(3),
+                    'deadline'    => now()->addWeeks($i + 2)->toDateTimeString(),
+                    'file_path'   => null,
+                ]);
+
+                $assignmentsByClass[$class->id][] = $assignment;
+            }
+        }
+
+        // ============================================================
+        // SUBMISSIONS (setiap member submit semua assignment kelasnya)
+        // ============================================================
+
+        $statusOptions = ['sudah', 'sudah', 'sudah', 'belum']; // 75% sudah submit
+
+        foreach ($classes as $class) {
+            $members     = $membersByClass[$class->id];
+            $assignments = $assignmentsByClass[$class->id];
+
+            foreach ($assignments as $assignment) {
+                foreach ($members as $member) {
+                    // 75% chance submit
+                    if ($faker->boolean(75)) {
+                        Submission::create([
+                            'assignment_id' => $assignment->id,
+                            'member_id'     => $member->id,
+                            'file_url'      => 'https://storage.example.com/submissions/' . $faker->lexify('????????') . '.pdf',
+                            'is_upload'     => true,
+                            'submitted_at'  => $faker->dateTimeBetween('-2 weeks', 'now'),
+                            'graded_at'     => $faker->boolean(60) ? $faker->dateTimeBetween('-1 week', 'now') : null,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        // ============================================================
+        // ATTENDANCES (setiap member di setiap meeting kelasnya)
+        // ============================================================
+
+        $attendanceStatus = ['hadir', 'hadir', 'hadir', 'izin', 'sakit', 'alpa'];
+
+        foreach ($classes as $index => $class) {
+            $mentor   = $mentors[$index];
+            $members  = $membersByClass[$class->id];
+            $meetings = $meetingsByClass[$class->id];
+
+            foreach ($meetings as $meeting) {
+                foreach ($members as $member) {
+                    Attendances::create([
+                        'meeting_id' => $meeting->id,
+                        'member_id'  => $member->id,
+                        'status'     => $faker->randomElement($attendanceStatus),
+                        'input_by'   => $mentor->id,
+                    ]);
+                }
+            }
+        }
+
+        $this->command->info('✅ Seeder selesai!');
+        $this->command->info('   mentor@test.com  / password');
+        $this->command->info('   member@test.com  / password');
     }
 }
