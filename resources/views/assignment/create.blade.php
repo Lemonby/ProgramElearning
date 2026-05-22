@@ -1,4 +1,4 @@
-<x-mentor-layout>
+    <x-mentor-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('Buat Assignment Baru') }}
@@ -36,6 +36,26 @@
                     Assignment akan otomatis terhubung ke kelas:
                     <span class="font-semibold">{{ $class->name ?? 'Kelas belum diset' }}</span>
                 </p>
+            </div>
+
+            {{-- Title --}}
+            <div class="mb-6">
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                    Judul Assignment <span class="text-red-500">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="title" 
+                    name="title"
+                    maxlength="255"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 {{ $errors->has('title') ? 'border-red-500' : 'border-gray-300' }}"
+                    placeholder="Contoh: Tugas Proyek Akhir - Website Portofolio"
+                    value="{{ old('title') }}"
+                    required
+                >
+                @error('title')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Description -->
