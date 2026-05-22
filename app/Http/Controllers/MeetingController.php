@@ -44,7 +44,7 @@ class MeetingController extends Controller
             'title' => $request->title,
             'meeting_date' => $request->meeting_date,
             'meeting_time' => $request->meeting_time,
-            'meeting_link' => $request->meeting_link ?? '',
+            'meeting_link' => $request->meeting_link,
             'description' => $request->description,
         ]);
 

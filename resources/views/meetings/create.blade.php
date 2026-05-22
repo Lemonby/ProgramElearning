@@ -53,7 +53,7 @@
                             <label for="meeting_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Tipe Meeting
                             </label>
-                            <select name="meeting_type" id="meeting_type" required
+                            <select name="meeting_type" id="meeting_type" data-offline-value="offline" required
                                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                                 <option value="online" {{ old('meeting_type') === 'online' ? 'selected' : '' }}>Online</option>
                                 <option value="offline" {{ old('meeting_type') === 'offline' ? 'selected' : '' }}>Offline</option>
@@ -93,9 +93,10 @@
         document.addEventListener('DOMContentLoaded', function () {
             const meetingType = document.getElementById('meeting_type');
             const meetingLink = document.getElementById('meeting_link');
+            const offlineValue = meetingType.dataset.offlineValue || 'offline';
 
             const updateMeetingLinkRequirement = () => {
-                meetingLink.required = meetingType.value !== 'offline';
+                meetingLink.required = meetingType.value !== offlineValue;
             };
 
             updateMeetingLinkRequirement();
