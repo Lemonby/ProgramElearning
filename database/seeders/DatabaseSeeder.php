@@ -14,7 +14,11 @@ class DatabaseSeeder extends Seeder
     {
         // Memanggil seeder MasterData yang sudah kamu buat
         $this->call([
-            MasterData::class,
+            UserSeeder::class,
+            ClassSeeder::class,
+            MeetingSeeder::class,
+            MaterialSeeder::class,
+            AttendanceSeeder::class,
         ]);
     }
 }
