@@ -258,7 +258,7 @@
                                 <p class="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Divisi / Member</p>
                                 <p class="text-xs font-bold text-white truncate max-w-[120px]">{{ Auth::user()->name }}</p>
                             </div>
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 border border-white/20 flex items-center justify-center font-bold text-sm text-white">
+                            <div class="w-8 h-8 rounded-full bg-purple-600 border border-white/20 flex items-center justify-center font-bold text-sm text-white">
                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                             </div>
                         </div>

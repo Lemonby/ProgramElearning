@@ -61,7 +61,7 @@ class MentorDashboardController extends Controller
                         'type' => 'submission',
                         'date' => $submission->submitted_at,
                         'title' => 'TUGAS DISELESAIKAN!',
-                        'description' => ($submission->member->name ?? 'Student') . ' baru saja menyelesaikan tugas! Yuk beri nilai.',
+                        'description' => ($submission->member->name ?? 'Student') . ' baru saja menyelesaikan tugas! Yuk lihat hasilnya.',
                         'detail_url' => route('assignment.show', $submission->assignment_id),
                     ];
                 });

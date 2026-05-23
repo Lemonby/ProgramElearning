@@ -190,7 +190,7 @@
                                 <!-- Student profile avatar + name -->
                                 <td class="py-4 px-6">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center font-bold text-xs text-white border border-white/10">
+                                        <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center font-bold text-xs text-white border border-white/10">
                                             {{ strtoupper(substr($member->name, 0, 1)) }}
                                         </div>
                                         <div>

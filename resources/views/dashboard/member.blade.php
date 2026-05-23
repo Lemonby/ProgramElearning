@@ -25,7 +25,7 @@
                                         fill="transparent" />
                                 <!-- Glowing Purple Progress Path -->
                                 <circle cx="64" cy="64" r="50" 
-                                        class="text-purple-500 stroke-current drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" 
+                                        class="text-purple-500 stroke-current" 
                                         stroke-width="10" 
                                         fill="transparent" 
                                         stroke-dasharray="314" 

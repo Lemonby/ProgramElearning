@@ -3,7 +3,7 @@
         <!-- Header -->
         <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-                <h1 class="text-3xl font-black text-white tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                <h1 class="text-3xl font-black text-white tracking-tight">
                     Materi Pembelajaran
                 </h1>
                 <p class="text-sm text-slate-400 mt-1.5 font-medium tracking-wide">Akses modul, slide, dan bahan ajar yang dibagikan oleh mentor</p>
@@ -23,7 +23,7 @@
                         <div>
                             <!-- Material Premium Icon Banner -->
                             <div class="flex items-center justify-between mb-4">
-                                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-violet-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-violet-900/30 group-hover:scale-110 transition-transform duration-300">
+                                <div class="w-10 h-10 rounded-2xl bg-violet-600 flex items-center justify-center text-white shadow-lg shadow-violet-900/30 group-hover:scale-110 transition-transform duration-300">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                                     </svg>
