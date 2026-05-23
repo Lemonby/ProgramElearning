@@ -51,7 +51,7 @@ class SubmissionController extends Controller
     public function create($assignmentId)
     {
         $assignment = $this->getAssignmentForMemberClassOrFail($assignmentId);
-        $userId = Auth::id();
+        $user = Auth::user();
 
         // Check if already submitted via User Eloquent relationship
         $existingSubmission = $user->submissions()
